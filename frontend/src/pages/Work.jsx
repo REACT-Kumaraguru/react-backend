@@ -1,12 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { InterestInfo } from '../components/WorkCom/InterestInfo';
 
 export const Work = () => {
+  const location = useLocation();
+  const interestSubmitted = location.state?.interestSubmitted === true;
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center p-6">
       {/* Spacer for Navbar */}
       <div className="h-24 w-full" />
+
+      {interestSubmitted && (
+        <div className="max-w-4xl w-full mb-6 p-4 bg-green-50 border border-green-200 rounded-xl shadow-sm">
+          <p className="text-sm font-bold text-green-800 text-center">
+            Thank you for submitting your interest. Our team will review and get back to you.
+          </p>
+        </div>
+      )}
 
       {/* Page Header */}
       <div className="max-w-4xl w-full text-center mb-12">

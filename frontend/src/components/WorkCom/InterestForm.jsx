@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2J7LbGxm0tCWFeISpJzOPcrqGNxvAk0zKrVkTFyQZ98_f-wld4RjTy_9pTsX8iWJY/exec"; 
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 export const InterestForm = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [confirmation, setConfirmation] = useState("");
 
   const [resumeFile, setResumeFile] = useState(null);
 
@@ -60,7 +60,6 @@ export const InterestForm = () => {
   const isValid = Object.keys(errors).length === 0;
 
   const handleChange = (e) => {
-    setSubmitted(false);
     setShowErrors(false);
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -88,7 +87,6 @@ export const InterestForm = () => {
 
   const submitForm = async () => {
     setShowErrors(true);
-    setSubmitted(false);
 
     if (!isValid) return;
     if (!SCRIPT_URL || SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
@@ -115,9 +113,7 @@ export const InterestForm = () => {
         body: JSON.stringify(payload)
       });
 
-      const msg = "Thank you for submitting your interest. Our team will review and get back to you.";
-      setConfirmation(msg);
-      setSubmitted(true);
+      navigate("/work", { state: { interestSubmitted: true } });
     } catch (err) {
       alert("Submission failed. Please try again.");
     } finally {
@@ -126,7 +122,27 @@ export const InterestForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4 md:p-8 font-sans relative">
+      {loading && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 backdrop-blur-[2px]"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 px-10 py-9 flex flex-col items-center gap-5 max-w-sm mx-4">
+            <div
+              className="h-14 w-14 rounded-full border-4 border-gray-200 border-t-[#0f766e] animate-spin"
+              aria-hidden
+            />
+            <div className="text-center">
+              <p className="text-gray-900 font-bold text-lg">Submitting your interest</p>
+              <p className="text-gray-500 text-sm mt-1">Please wait…</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="h-20 w-full" />
 
       <div className="w-full max-w-3xl">
@@ -140,12 +156,6 @@ export const InterestForm = () => {
         </div>
 
         <div className="bg-white w-full rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
-          {submitted && (
-            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
-              <p className="text-sm font-bold text-green-700">{confirmation}</p>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">

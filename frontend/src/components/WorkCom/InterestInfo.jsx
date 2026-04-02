@@ -7,7 +7,7 @@ export const InterestInfo = () => {
       {/* ================= HERO SECTION ================= */}
       <section className="px-6 py-16 md:py-20 mt-10 text-center max-w-5xl mx-auto">
         <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-6 tracking-tight">
-          Expression of Interest – Work With Us (REACT)
+          Expression of Interest – Work With Us 
         </h1>
 
         <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
