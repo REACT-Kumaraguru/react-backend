@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { InterestInfo } from '../components/WorkCom/InterestInfo';
 
 export const Work = () => {
   return (
@@ -20,7 +21,7 @@ export const Work = () => {
       <div className="max-w-4xl w-full flex flex-col gap-8">
         
         {/* CARD 1: Social Research & Outreach Lead */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+        {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
           <div className="w-full md:w-3 bg-[#0f766e]"></div>
           <div className="p-8 flex-1">
             <div className="flex justify-between items-start mb-4">
@@ -45,7 +46,6 @@ export const Work = () => {
               
               <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">0-2 Years Exp.</span>
               <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">Master's Degree Required</span>
-              {/* <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">Field Validation</span> */}
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/work-social-info" className="inline-flex items-center justify-center border-2 border-[#0f766e] text-[#0f766e] hover:bg-teal-50 px-6 py-2 rounded-lg font-bold transition-all text-sm">
@@ -56,11 +56,11 @@ export const Work = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </div> */}
 
        
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-      {/* Purple Accent for Leadership/Education */}
+    {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+      
       <div className="w-full md:w-3 bg-purple-600"></div> 
       
       <div className="p-8 flex-1">
@@ -98,7 +98,7 @@ export const Work = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Link to the Info Page */}
+          
           <Link 
             to="/work-lead-info" 
             className="inline-flex items-center justify-center border-2 border-purple-600 text-purple-600 hover:bg-purple-50 px-6 py-2 rounded-lg font-bold transition-all text-sm"
@@ -106,7 +106,6 @@ export const Work = () => {
             View Role Details
           </Link>
           
-          {/* Link to the Form you just built */}
           <Link 
             to="/work-lead-form" 
             className="inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-bold transition-all shadow-sm text-sm"
@@ -115,12 +114,12 @@ export const Work = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </div> */}
 
 
         {/* CARD 2: Market Research & Partnerships Lead */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-          <div className="w-full md:w-3 bg-[#be185d]"></div> {/* Different accent color (Pink/Ruby) */}
+        {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+          <div className="w-full md:w-3 bg-[#be185d]"></div> 
           <div className="p-8 flex-1">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -142,7 +141,6 @@ export const Work = () => {
             </p>
             <div className="flex flex-wrap gap-2 mb-8">
               <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">0-2 Years Exp.</span>
-              {/* <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">CSR & Grants</span> */}
               <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">Master's Degree Required</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -154,11 +152,11 @@ export const Work = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* CARD 3: Mechanical Engineer – Development & Fabrication */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-        <div className="w-full md:w-3 bg-[#2563eb]"></div> {/* Blue Accent for Engineering */}
+        <div className="w-full md:w-3 bg-[#2563eb]"></div> 
         <div className="p-8 flex-1">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -232,8 +230,8 @@ export const Work = () => {
       </div>
       
     {/* CARD 5: Global Advisor – Strategy and Partnerships */}
-<div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-  <div className="w-full md:w-3 bg-[#4f46e5]"></div> {/* Indigo/Purple Accent for Advisory */}
+{/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+  <div className="w-full md:w-3 bg-[#4f46e5]"></div>
   <div className="p-8 flex-1">
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -267,11 +265,11 @@ export const Work = () => {
       </Link>
     </div>
   </div>
-</div>
+</div> */}
 
       {/* CARD 6: Web Developer – Student Role */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-        <div className="w-full md:w-3 bg-yellow-500"></div> {/* Yellow Accent for Web Developer */}
+      {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+        <div className="w-full md:w-3 bg-yellow-500"></div> 
         <div className="p-8 flex-1">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -305,11 +303,11 @@ export const Work = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CARD 7: Event Manager – Student Role */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-        <div className="w-full md:w-3 bg-[#7c3aed]"></div> {/* Purple Accent for Event Manager */}
+      {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+        <div className="w-full md:w-3 bg-[#7c3aed]"></div> 
         <div className="p-8 flex-1">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -343,12 +341,12 @@ export const Work = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CARD 8: Research Intern – Student Role */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+      {/* <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
         
-        {/* Blue Accent for Research Intern */}
+        
         <div className="w-full md:w-3 bg-[#2563eb]"></div>
 
         <div className="p-8 flex-1">
@@ -406,47 +404,9 @@ export const Work = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* CARD 9: Expression of Interest (Standalone) */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
-        <div className="w-full md:w-3 bg-[#0f766e]"></div>
-        <div className="p-8 flex-1">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <span className="text-[10px] font-bold text-[#0f766e] uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
-                Expression of Interest
-              </span>
-              <h2 className="text-2xl font-bold text-gray-800 mt-3 tracking-tight">
-                Collaborate, Intern, or Join REACT
-              </h2>
-            </div>
-            <div className="hidden md:block text-right">
-              <p className="text-xs text-gray-400 uppercase font-bold tracking-tighter">Application</p>
-              <p className="text-sm font-semibold text-gray-700 uppercase">Open (All Domains)</p>
-            </div>
-          </div>
-
-          <p className="text-gray-600 mb-6 line-clamp-2 text-sm leading-relaxed">
-            Interested in working with REACT? Submit your expression of interest to collaborate, intern, or join our team. We are looking for passionate individuals across multiple domains.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              to="/work-interest-info"
-              className="inline-flex items-center justify-center border-2 border-[#0f766e] text-[#0f766e] hover:bg-teal-50 px-6 py-2 rounded-lg font-bold transition-all text-sm"
-            >
-              View Details
-            </Link>
-            <Link
-              to="/work-interest-form"
-              className="inline-flex items-center justify-center bg-[#0f766e] hover:bg-[#115e59] text-white px-6 py-2 rounded-lg font-bold transition-all shadow-sm text-sm"
-            >
-              Submit Expression of Interest
-            </Link>
-          </div>
-        </div>
-      </div>
+      <InterestInfo />
 
       
       </div>

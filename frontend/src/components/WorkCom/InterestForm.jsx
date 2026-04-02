@@ -1,21 +1,8 @@
 import React, { useMemo, useState } from "react";
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzo6LpTKdfmTwWEpcopCzp06gNw0O-rXugwjK_K4Jqe_2xMLvCEbUnfx_nA6Phq7Q/exec"; // Replace after deploying the Apps Script web app
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2J7LbGxm0tCWFeISpJzOPcrqGNxvAk0zKrVkTFyQZ98_f-wld4RjTy_9pTsX8iWJY/exec"; 
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
-
-const preferredDomainOptions = [
-  "Social Research & Outreach",
-  "Research & Data Analysis",
-  "Web Development",
-  "Electronics / EEE",
-  "Mechanical Engineering",
-  "Education / Curriculum Design",
-  "Partnerships / Strategy",
-  "Events / Operations",
-  "Advisory / Mentorship",
-  "Other"
-];
 
 export const InterestForm = () => {
   const [loading, setLoading] = useState(false);
@@ -29,7 +16,7 @@ export const InterestForm = () => {
     fullName: "",
     email: "",
     phone: "",
-    preferredDomains: [],
+    preferredDomains: "",
     whyPreferRole: "",
     pastExperience: "",
     currentStatus: "",
@@ -78,13 +65,6 @@ export const InterestForm = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handlePreferredDomainsChange = (e) => {
-    setSubmitted(false);
-    setShowErrors(false);
-    const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value);
-    setFormData((prev) => ({ ...prev, preferredDomains: selected }));
-  };
-
   const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,13 +100,18 @@ export const InterestForm = () => {
     try {
       const payload = {
         ...formData,
-        preferredDomains: formData.preferredDomains || [],
+        preferredDomains: formData.preferredDomains || "",
         resume: resumeFile
       };
 
+      // Google Apps Script web apps reject CORS preflight on JSON (OPTIONS → 405).
+      // text/plain avoids preflight; no-cors lets the POST complete (response is not readable).
       await fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify(payload)
       });
 
@@ -222,21 +207,16 @@ export const InterestForm = () => {
                 Preferred Role / Domain
               </label>
               <p className="text-xs text-gray-500 mb-2">
-                Select one or more (optional; we can refine your role later)
+                Optional; describe the role or area you are interested in
               </p>
-              <select
-                multiple
+              <input
+                type="text"
                 name="preferredDomains"
                 value={formData.preferredDomains}
-                onChange={handlePreferredDomainsChange}
-                className="w-full border border-gray-200 p-3 rounded-lg outline-none bg-white focus:ring-2 focus:ring-[#0f766e] h-36"
-              >
-                {preferredDomainOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+                onChange={handleChange}
+                placeholder="e.g., Research, Web development, Operations"
+                className="w-full border border-gray-200 p-3 rounded-lg outline-none focus:ring-2 focus:ring-[#0f766e]"
+              />
             </div>
           </div>
 
