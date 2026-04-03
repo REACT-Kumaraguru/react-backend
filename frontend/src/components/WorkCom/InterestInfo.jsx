@@ -24,19 +24,7 @@ export const InterestInfo = () => {
         </div>
       </section>
 
-      {/* ================= QUICK CONTEXT ================= */}
-      <section className="px-6 pb-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-8 md:p-10">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              What this form is for
-            </h2>
-            <p className="text-gray-700 leading-relaxed">
-              Use this form to share your profile so our team can review your fit for future collaborations, internships, and team openings.
-            </p>
-          </div>
-        </div>
-      </section>
+     
     </div>
   );
 };

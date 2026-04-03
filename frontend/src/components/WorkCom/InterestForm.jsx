@@ -1,9 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2J7LbGxm0tCWFeISpJzOPcrqGNxvAk0zKrVkTFyQZ98_f-wld4RjTy_9pTsX8iWJY/exec"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOX8Md6YmXAJ0dVYN_CqJCY8zEfGu6yrJEClPzNfjBusQaKYd5fpowLAjl25YfwbCF/exec";
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+
+/** Non-empty value must look like a LinkedIn profile URL */
+const isValidLinkedInUrl = (value) => {
+  const v = String(value || "").trim();
+  if (!v) return false;
+  return /linkedin\.com\/(in|pub|school|company)/i.test(v);
+};
 
 export const InterestForm = () => {
   const navigate = useNavigate();
@@ -16,6 +23,7 @@ export const InterestForm = () => {
     fullName: "",
     email: "",
     phone: "",
+    linkedin: "",
     preferredDomains: "",
     whyPreferRole: "",
     pastExperience: "",
@@ -33,6 +41,10 @@ export const InterestForm = () => {
 
     const digits = String(formData.phone || "").replace(/\D/g, "");
     if (!digits || digits.length < 10) e.phone = "Valid Phone Number is required";
+
+    if (!formData.linkedin.trim()) e.linkedin = "LinkedIn profile URL is required";
+    else if (!isValidLinkedInUrl(formData.linkedin))
+      e.linkedin = "Enter a valid LinkedIn profile URL (e.g. linkedin.com/in/your-profile)";
 
     if (!resumeFile) e.resume = "Upload Resume (CV) PDF is mandatory";
 
@@ -209,6 +221,28 @@ export const InterestForm = () => {
               />
               {showErrors && errors.phone && (
                 <p className="text-red-500 text-xs mt-1 font-medium">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                LinkedIn profile <span className="text-red-500">*</span>
+              </label>
+              <p className="text-xs text-gray-500 mb-2">Full URL to your public profile</p>
+              <input
+                name="linkedin"
+                value={formData.linkedin}
+                onChange={handleChange}
+                placeholder="https://www.linkedin.com/in/your-profile"
+                type="url"
+                autoComplete="url"
+                required
+                className={`w-full border p-3 rounded-lg outline-none focus:ring-2 transition-all ${
+                  showErrors && errors.linkedin ? "border-red-400 bg-red-50 focus:ring-red-200" : "border-gray-200 focus:ring-[#0f766e]"
+                }`}
+              />
+              {showErrors && errors.linkedin && (
+                <p className="text-red-500 text-xs mt-1 font-medium">{errors.linkedin}</p>
               )}
             </div>
 

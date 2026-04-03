@@ -12,6 +12,13 @@
   /** Tab name in the bound spreadsheet */
   const SHEET_NAME = "Sheet1";
 
+  /**
+   * Expected columns (row 1 optional labels): Submitted At | Full Name | Email | Phone |
+   * LinkedIn (required in form) | Resume file name | Resume Drive URL | Preferred role/domain | Why role | Past exp |
+   * Status | Working details | Fresher exp | Availability
+   * If upgrading from an older sheet without LinkedIn, insert a column E and shift the rest right.
+   */
+
   /** Google Drive folder ID for uploaded resumes (from folder URL) */
   const RESUME_FOLDER_ID = "1BXi5LVj78CEfAOTxNAtuoVqyV5eHIrlk";
 
@@ -40,6 +47,7 @@
       const fullName = safeString_(data.fullName);
       const email = safeString_(data.email);
       const phone = safeString_(data.phone);
+      const linkedin = safeString_(data.linkedin);
       const resumeFileName = data.resume && data.resume.name ? String(data.resume.name) : "";
       const preferredDomains = normalizePreferredDomains_(data.preferredDomains);
       const whyPreferRole = safeString_(data.whyPreferRole);
@@ -49,11 +57,13 @@
       const fresherExperience = safeString_(data.fresherExperience);
       const availability = safeString_(data.availability);
 
+      // Columns: A Timestamp, B Name, C Email, D Phone, E LinkedIn, F Resume filename, G Drive URL, H+ rest
       const row = [
         timestamp,
         fullName,
         email,
         phone,
+        linkedin,
         resumeFileName,
         "",
         preferredDomains,
@@ -77,7 +87,7 @@
         fileUrl = file.getUrl();
 
         const lastRow = sheet.getLastRow();
-        sheet.getRange(lastRow, 6).setValue(fileUrl);
+        sheet.getRange(lastRow, 7).setValue(fileUrl);
       }
 
       return jsonResponse_({
