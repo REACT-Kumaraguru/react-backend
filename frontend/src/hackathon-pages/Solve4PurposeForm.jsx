@@ -59,9 +59,18 @@ const Solve4PurposeForm = () => {
   };
 
   // ─── VALIDATIONS (each step validates its own screen) ───
+  // Order: 1 = Theme & problem statement, 2 = Understanding & motivation, 3 = Team
 
-  // Step 1: Problem Understanding, Solution, Impact, Motivation, Prior Experience
   const validateStep1 = () => {
+    const errs = [];
+    if (!formData.theme) errs.push('Theme of the Project is required.');
+    if (formData.theme === 'Other' && !formData.themeOther?.trim()) errs.push('Specify Theme (Other) is required when Theme is Other.');
+    if (!formData.problemStatementSelection?.trim()) errs.push('Problem Statement Selection is required.');
+    setStepErrors((e) => ({ ...e, step1: errs }));
+    return errs.length === 0;
+  };
+
+  const validateStep2 = () => {
     const errs = [];
     if (!formData.problemUnderstanding?.trim()) errs.push('Problem Understanding is required.');
     if (!formData.proposedSolution?.trim()) errs.push('Root Cause Analysis Overview is required.');
@@ -69,12 +78,11 @@ const Solve4PurposeForm = () => {
     if (!formData.motivationToParticipate?.trim()) errs.push('Motivation to Participate is required.');
     if (!formData.priorExperience) errs.push('Prior Experience (Yes/No) is required.');
     if (formData.priorExperience === 'Yes' && !formData.previousWorkDetails?.trim()) errs.push('Previous Work Details is required when Prior Experience is Yes.');
-    setStepErrors((e) => ({ ...e, step1: errs }));
+    setStepErrors((e) => ({ ...e, step2: errs }));
     return errs.length === 0;
   };
 
-  // Step 2 = Team Info (swapped with former step 3)
-  const validateStep2 = () => {
+  const validateStep3 = () => {
     const errs = [];
     if (!formData.teamName?.trim()) errs.push('Team Name is required.');
     const lead = formData.teamLead;
@@ -90,16 +98,6 @@ const Solve4PurposeForm = () => {
       if (!m?.year?.trim()) errs.push(`Member ${i + 1} Year is required.`);
       if (!m?.dept?.trim()) errs.push(`Member ${i + 1} Dept is required.`);
     });
-    setStepErrors((e) => ({ ...e, step2: errs }));
-    return errs.length === 0;
-  };
-
-  // Step 3 = Theme & Problem Statement (swapped with former step 2)
-  const validateStep3 = () => {
-    const errs = [];
-    if (!formData.theme) errs.push('Theme of the Project is required.');
-    if (formData.theme === 'Other' && !formData.themeOther?.trim()) errs.push('Specify Theme (Other) is required when Theme is Other.');
-    if (!formData.problemStatementSelection?.trim()) errs.push('Problem Statement Selection is required.');
     setStepErrors((e) => ({ ...e, step3: errs }));
     return errs.length === 0;
   };
@@ -194,15 +192,15 @@ const Solve4PurposeForm = () => {
 
         {/* Form Container */}
         <form className="relative" onSubmit={handleSubmit}>
-          <div className="min-h-[600px]">
+          <div className={step === 1 ? 'min-h-0' : 'min-h-[600px]'}>
             <AnimatePresence mode="wait">
 
-              {/* STEP 1: Problem Understanding, Solution, Impact, Motivation, Prior Experience */}
+              {/* STEP 1: Theme & Problem Statement */}
               {step === 1 && (
                 <motion.div
                   key="step1"
                   initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
-                  className="space-y-6"
+                  className="space-y-4"
                 >
                   {stepErrors.step1.length > 0 && (
                     <div className="bg-red-100 border-4 border-red-600 p-4 text-red-800 font-bold">
@@ -212,7 +210,56 @@ const Solve4PurposeForm = () => {
                     </div>
                   )}
                   <div>
-                    <label className={labelStyle}>1. Problem Understanding <span className="text-red-600">*</span></label>
+                    <label className={labelStyle}>1. Theme of the Project <span className="text-red-600">*</span></label>
+                    <select required className={`w-full ${boxStyle}`} value={formData.theme} onChange={(e) => setFormData({ ...formData, theme: e.target.value })}>
+                      <option value="">Select a Theme</option>
+                      {themes.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  {formData.theme === 'Other' && (
+                    <div>
+                      <label className={labelStyle}>Specify Theme (Other) <span className="text-red-600">*</span></label>
+                      <input
+                        type="text"
+                        required
+                        className={`w-full ${boxStyle}`}
+                        placeholder="Enter your theme"
+                        value={formData.themeOther}
+                        onChange={(e) => setFormData({ ...formData, themeOther: e.target.value })}
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <label className={labelStyle}>2. Problem Statement Selection <span className="text-red-600">*</span></label>
+                    <p className="text-sm text-slate-600 mb-2">Which problem statement are you applying to solve?</p>
+                    <textarea
+                      required
+                      rows="3"
+                      className={`w-full ${boxStyle}`}
+                      placeholder="Enter or paste the problem statement you wish to address"
+                      value={formData.problemStatementSelection}
+                      onChange={(e) => setFormData({ ...formData, problemStatementSelection: e.target.value })}
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STEP 2: Problem Understanding, Solution, Impact, Motivation, Prior Experience */}
+              {step === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
+                  className="space-y-6"
+                >
+                  {stepErrors.step2.length > 0 && (
+                    <div className="bg-red-100 border-4 border-red-600 p-4 text-red-800 font-bold">
+                      <ul className="list-disc list-inside space-y-1">
+                        {stepErrors.step2.map((msg, i) => <li key={i}>{msg}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  <div>
+                    <label className={labelStyle}>3. Problem Understanding <span className="text-red-600">*</span></label>
                     <p className="text-sm text-slate-600 mb-2">Describe your understanding of the selected problem statement. What key challenges or gaps have you identified?</p>
                     <textarea
                       required
@@ -224,7 +271,7 @@ const Solve4PurposeForm = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelStyle}>2. Root Cause Analysis Overview <span className="text-red-600">*</span></label>
+                    <label className={labelStyle}>4. Root Cause Analysis Overview <span className="text-red-600">*</span></label>
                     <p className="text-sm text-slate-600 mb-2">What are the root causes of this problem, and who are the primary stakeholders affected?</p>
                     <textarea
                       required
@@ -236,7 +283,7 @@ const Solve4PurposeForm = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelStyle}>3. Expected Impact <span className="text-red-600">*</span></label>
+                    <label className={labelStyle}>5. Expected Impact <span className="text-red-600">*</span></label>
                     <p className="text-sm text-slate-600 mb-2">What measurable or meaningful impact will your solution create? Who will benefit and how?</p>
                     <textarea
                       required
@@ -248,7 +295,7 @@ const Solve4PurposeForm = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelStyle}>4. Motivation to Participate <span className="text-red-600">*</span></label>
+                    <label className={labelStyle}>6. Motivation to Participate <span className="text-red-600">*</span></label>
                     <p className="text-sm text-slate-600 mb-2">Why do you want to participate in Solve4Purpose Ideathon?</p>
                     <textarea
                       required
@@ -260,7 +307,7 @@ const Solve4PurposeForm = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelStyle}>5. Prior Experience in This Domain <span className="text-red-600">*</span></label>
+                    <label className={labelStyle}>7. Prior Experience in This Domain <span className="text-red-600">*</span></label>
                     <p className="text-sm text-slate-600 mb-2">Have you previously worked on a similar problem or domain?</p>
                     <div className="flex gap-6 mt-2">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -289,7 +336,7 @@ const Solve4PurposeForm = () => {
                   </div>
                   {formData.priorExperience === 'Yes' && (
                     <div>
-                      <label className={labelStyle}>6. If Yes – Previous Work Details <span className="text-red-600">*</span></label>
+                      <label className={labelStyle}>8. If Yes – Previous Work Details <span className="text-red-600">*</span></label>
                       <p className="text-sm text-slate-600 mb-2">Briefly describe your earlier solution, prototype, or experience.</p>
                       <textarea
                         required={formData.priorExperience === 'Yes'}
@@ -304,17 +351,17 @@ const Solve4PurposeForm = () => {
                 </motion.div>
               )}
 
-              {/* STEP 2: Team Info */}
-              {step === 2 && (
+              {/* STEP 3: Team Info */}
+              {step === 3 && (
                 <motion.div
-                  key="step2"
+                  key="step3"
                   initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
                   className="space-y-6"
                 >
-                  {stepErrors.step2.length > 0 && (
+                  {stepErrors.step3.length > 0 && (
                     <div className="bg-red-100 border-4 border-red-600 p-4 text-red-800 font-bold">
                       <ul className="list-disc list-inside space-y-1">
-                        {stepErrors.step2.map((msg, i) => <li key={i}>{msg}</li>)}
+                        {stepErrors.step3.map((msg, i) => <li key={i}>{msg}</li>)}
                       </ul>
                     </div>
                   )}
@@ -483,60 +530,11 @@ const Solve4PurposeForm = () => {
                 </motion.div>
               )}
 
-              {/* STEP 3: Theme & Problem Statement */}
-              {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
-                  className="space-y-6"
-                >
-                  {stepErrors.step3.length > 0 && (
-                    <div className="bg-red-100 border-4 border-red-600 p-4 text-red-800 font-bold">
-                      <ul className="list-disc list-inside space-y-1">
-                        {stepErrors.step3.map((msg, i) => <li key={i}>{msg}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                  <div>
-                    <label className={labelStyle}>7. Theme of the Project <span className="text-red-600">*</span></label>
-                    <select required className={`w-full ${boxStyle}`} value={formData.theme} onChange={(e) => setFormData({ ...formData, theme: e.target.value })}>
-                      <option value="">Select a Theme</option>
-                      {themes.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                  {formData.theme === 'Other' && (
-                    <div>
-                      <label className={labelStyle}>Specify Theme (Other) <span className="text-red-600">*</span></label>
-                      <input
-                        type="text"
-                        required
-                        className={`w-full ${boxStyle}`}
-                        placeholder="Enter your theme"
-                        value={formData.themeOther}
-                        onChange={(e) => setFormData({ ...formData, themeOther: e.target.value })}
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <label className={labelStyle}>8. Problem Statement Selection <span className="text-red-600">*</span></label>
-                    <p className="text-sm text-slate-600 mb-2">Which problem statement are you applying to solve?</p>
-                    <textarea
-                      required
-                      rows="3"
-                      className={`w-full ${boxStyle}`}
-                      placeholder="Enter or paste the problem statement you wish to address"
-                      value={formData.problemStatementSelection}
-                      onChange={(e) => setFormData({ ...formData, problemStatementSelection: e.target.value })}
-                    />
-                  </div>
-                </motion.div>
-              )}
-
             </AnimatePresence>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-12">
+          <div className={`flex justify-between ${step === 1 ? 'mt-6' : 'mt-12'}`}>
             <button
               type="button"
               onClick={prevStep}
