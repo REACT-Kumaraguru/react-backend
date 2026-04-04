@@ -73,7 +73,7 @@ const EVENT_MILESTONES = [
   },
   {
     title: 'Grand Finale',
-    date: '5th – 8th June',
+    date: '18th April',
     Icon: Trophy,
     accent: 'from-violet-400/90 to-violet-600',
     glow: 'shadow-violet-500/40',
