@@ -49,7 +49,7 @@ const STEPS = [
 const EVENT_MILESTONES = [
   {
     title: 'Registration Starts',
-    date: '2nd April – 13th April',
+    date: '2nd April – 12th April',
     Icon: ClipboardPen,
     accent: 'from-teal-400/90 to-teal-600',
     glow: 'shadow-teal-500/40',
@@ -57,7 +57,7 @@ const EVENT_MILESTONES = [
   },
   {
     title: 'Shortlisting Announcement',
-    date: '14th April',
+    date: '13th April',
     Icon: ListChecks,
     accent: 'from-amber-400/90 to-amber-600',
     glow: 'shadow-amber-500/40',
@@ -65,7 +65,7 @@ const EVENT_MILESTONES = [
   },
   {
     title: 'Ideathon Begins',
-    date: '16th April',
+    date: '15th April',
     Icon: Rocket,
     accent: 'from-sky-400/90 to-sky-600',
     glow: 'shadow-sky-500/40',
@@ -73,7 +73,7 @@ const EVENT_MILESTONES = [
   },
   {
     title: 'Grand Finale',
-    date: '18th April',
+    date: '17th April',
     Icon: Trophy,
     accent: 'from-violet-400/90 to-violet-600',
     glow: 'shadow-violet-500/40',

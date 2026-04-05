@@ -135,7 +135,7 @@ export default function HackathonLanding() {
             animate={{ opacity: 1 }}
             className="text-2xl md:text-3xl font-bold text-slate-700 mb-6"
           >
-            April 15 – April 18, 2026
+            April 15 – April 17, 2026
           </motion.h2>
           
           <p className="text-slate-500 font-medium mb-4 flex items-center gap-2">
