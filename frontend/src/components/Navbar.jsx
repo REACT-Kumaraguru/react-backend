@@ -86,19 +86,20 @@ export const Navbar = () => {
           </Link>
           <Link to="/solve4purpose">
             <button
+              type="button"
               className="
                 hidden lg:block
                 bg-[#FF4D4D]
                 text-white
-                font-bold
-                px-8 py-3
-                rounded-xl
+                px-4 py-2
+                text-[10px] font-bold uppercase tracking-wider
+                rounded-lg
                 transition-all
                 duration-300
                 shadow-md
-                hover:shadow-[6px_6px_0px_#1E293B]
-                hover:-translate-x-1
-                hover:-translate-y-1
+                hover:shadow-[4px_4px_0px_#1E293B]
+                hover:-translate-x-0.5
+                hover:-translate-y-0.5
                 active:translate-x-0
                 active:translate-y-0
                 active:shadow-md
@@ -160,18 +161,19 @@ export const Navbar = () => {
             className="mt-3 inline-block"
           >
             <button
+              type="button"
               className="
-                px-8 py-3
-                text-sm font-bold
+                px-5 py-2
+                text-xs font-bold uppercase tracking-wider
                 text-white
                 bg-black
-                rounded-xl
+                rounded-lg
                 transition-all duration-300
                 shadow-md
                 hover:bg-[#FF4D4D]
-                hover:shadow-[6px_6px_0px_#1E293B]
-                hover:-translate-x-1
-                hover:-translate-y-1
+                hover:shadow-[4px_4px_0px_#1E293B]
+                hover:-translate-x-0.5
+                hover:-translate-y-0.5
                 active:translate-x-0
                 active:translate-y-0
                 active:shadow-md

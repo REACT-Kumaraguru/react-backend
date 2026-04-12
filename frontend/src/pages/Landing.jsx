@@ -1,5 +1,5 @@
 import React from 'react';
-import NewLanding from '../components/Landing Components/newLanding/NewLanding';
+import { Hero } from '../components/Hero';
 
 /** Site home (`/`) — full landing experience */
-export const Landing = () => <NewLanding />;
+export const Landing = () => <Hero />;

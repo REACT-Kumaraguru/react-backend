@@ -71,3 +71,12 @@ CREATE TABLE IF NOT EXISTS programme_form_submissions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_prog_form_sub_prog ON programme_form_submissions (programme_id);
+
+CREATE TABLE IF NOT EXISTS field_projects (
+  id SERIAL PRIMARY KEY,
+  sort_order INT NOT NULL DEFAULT 0,
+  card_data JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_field_projects_sort ON field_projects (sort_order, id);

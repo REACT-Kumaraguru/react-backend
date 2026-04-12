@@ -1,4 +1,4 @@
-import { normalizeAccentHex } from './programmeAccentColor';
+import { legacyThemeFromAccent, normalizeAccentHex } from './programmeAccentColor';
 import { normalizeFormFieldType } from './programmeFormFieldTypes';
 
 function newFieldId() {
@@ -86,6 +86,50 @@ export function programmeToForm(p) {
     eligibility: p.eligibility || '',
     buttonText: p.buttonText || 'Learn more',
     buttonLink: p.buttonLink || '',
+    formFields,
+  };
+}
+
+/** Same shape as API programme rows — for save requests and admin live preview. */
+export function programmeFormToPayload(form) {
+  const info = (form.info || [])
+    .map((x) => ({ label: String(x.label || '').trim(), value: String(x.value || '').trim() }))
+    .filter((x) => x.label && x.value);
+  const features = (form.features || []).map((s) => String(s).trim()).filter(Boolean);
+  const formFields = (form.formFields || [])
+    .map((x) => {
+      const type = normalizeFormFieldType(x.type);
+      const opts = (Array.isArray(x.options) ? x.options : [])
+        .map((o) => String(o ?? '').trim())
+        .filter((o, j, arr) => o && arr.findIndex((t) => t.toLowerCase() === o.toLowerCase()) === j)
+        .slice(0, 50);
+      return {
+        id: String(x.id || '').trim(),
+        name: String(x.name || '').trim(),
+        type,
+        required: !!x.required,
+        numberAllowDecimals: type === 'number' ? !!x.numberAllowDecimals : false,
+        fileAccept: type === 'file' ? String(x.fileAccept || '').trim().slice(0, 200) : '',
+        options: type === 'dropdown' ? opts : [],
+      };
+    })
+    .filter((x) => x.name);
+  const accent = normalizeAccentHex(form.accentColor) || '#f97316';
+  return {
+    category: String(form.category || '').trim(),
+    accentColor: accent,
+    theme: legacyThemeFromAccent(accent),
+    sort_order: Number.isFinite(Number(form.sort_order)) ? parseInt(form.sort_order, 10) : 0,
+    slug: String(form.slug || '').trim(),
+    title: String(form.title || '').trim(),
+    tagline: String(form.tagline || '').trim(),
+    shortDescription: String(form.shortDescription || '').trim(),
+    longDescription: String(form.longDescription || '').trim(),
+    info,
+    features,
+    eligibility: String(form.eligibility || '').trim(),
+    buttonText: String(form.buttonText || '').trim() || 'Learn more',
+    buttonLink: String(form.buttonLink || '').trim(),
     formFields,
   };
 }

@@ -12,6 +12,7 @@ import { runMigrations } from './migrate.js';
 import { registerOdRoutes } from './odRoutes.js';
 import { registerRiskmRoutes } from './riskmRoutes.js';
 import { registerProgrammesRoutes } from './programmesRoutes.js';
+import { registerProjectsRoutes } from './projectsRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
@@ -650,6 +651,7 @@ app.delete('/api/admin/applications/:id', requireAdmin, async (req, res) => {
 registerOdRoutes(app, pool);
 registerRiskmRoutes(app, pool);
 registerProgrammesRoutes(app, pool);
+registerProjectsRoutes(app, pool);
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });

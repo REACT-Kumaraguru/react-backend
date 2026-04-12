@@ -1,61 +1,82 @@
-import React from 'react'
-import ProjectCard from '../components/ProgrammesCom/ProjectCard'
+import React, { useEffect, useState } from 'react';
+import { fetchProjects } from '../api/projectsApi';
+import ProjectCard from '../components/ProgrammesCom/ProjectCard';
 
 export const Projects = () => {
+  const [rows, setRows] = useState(null);
+  const [error, setError] = useState('');
 
-  // Data for Field Projects Section
-  const projectData = [
-    {
-      title: "Agriculture Innovation",
-      imgageUrl: "https://img.freepik.com/free-photo/detail-rice-plant-sunset-valencia-with-plantation-out-focus-rice-grains-plant-seed_181624-25838.jpg?semt=ais_hybrid&w=740&q=80",
-      tagline: "Optimizing the Agrarian Lifecycle",
-      who: "Sulur, Hyderabad & Mysuru Clusters",
-      duration: "Ongoing Field Testing",
-      format: "Farmer-Partner Collaboration",
-      description: "Developing precision water-flow systems and ergonomic post-harvest tools to address soil and market inefficiencies directly with farmer partners.",
-      postedDate: "LATEST OUTCOME"
-    },
-    {
-      title: "Health & Inclusion",
-      tagline: "Design for Dignity & Independence",
-      who: "Senjolai Trust, Coimbatore",
-      duration: "Pilot Phase",
-      format: "Co-creation / Assistive Tech",
-      description: "Co-creating assistive devices and adaptive workspaces with individuals with spinal-cord injuries to restore economic independence and livelihoods.",
-      postedDate: "IN REVIEW"
-    }
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setError('');
+      try {
+        const data = await fetchProjects();
+        if (!cancelled) setRows(Array.isArray(data) ? data : []);
+      } catch (e) {
+        if (!cancelled) {
+          setError(e.message || 'Could not load projects');
+          setRows([]);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 pt-32 pb-20 px-6 relative overflow-hidden font-poppins">
+    <div className="relative min-h-screen overflow-hidden bg-white px-6 pb-20 pt-32 font-poppins text-slate-900">
+      <div className="pointer-events-none absolute left-[-10%] top-[5%] h-[800px] w-[800px] rounded-full border border-slate-100" />
+      <div className="pointer-events-none absolute right-[-10%] top-[40%] h-[600px] w-[600px] rounded-full border border-blue-50" />
+      <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] rounded-full bg-blue-50/40 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-purple-50/40 blur-[120px]" />
 
-      {/* --- BACKGROUND ORBITS & GLOWS --- */}
-      <div className="absolute top-[5%] left-[-10%] w-[800px] h-[800px] border border-slate-100 rounded-full pointer-events-none" />
-      <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] border border-blue-50 rounded-full pointer-events-none" />
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-50/40 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-50/40 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto relative z-10">
-
-        {/* --- HERO SECTION --- */}
-        <div className="flex flex-col items-center text-center mb-20">
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)] mb-6" />
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-slate-950">
-            Field Projects
-          </h1>
-          <p className="max-w-3xl text-lg md:text-xl text-slate-600 leading-relaxed">
-            Explore our <span className="text-blue-600 font-semibold">field projects</span> where innovation meets real-world challenges. From agriculture to health & inclusion, discover how REACT is making a tangible difference.
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="mb-20 flex flex-col items-center text-center">
+          <div className="mb-6 h-3 w-3 animate-pulse rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+          <h1 className="mb-8 text-5xl font-bold tracking-tight text-slate-950 md:text-7xl">Field Projects</h1>
+          <p className="max-w-3xl text-lg leading-relaxed text-slate-600 md:text-xl">
+            Explore our <span className="font-semibold text-blue-600">field projects</span> where innovation meets
+            real-world challenges. From agriculture to health and inclusion, discover how REACT is making a tangible
+            difference.
           </p>
-          <div className="mt-12 w-24 h-1 bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+          <div className="mt-12 h-1 w-24 bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         </div>
 
-        {/* --- FIELD PROJECTS GRID --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {projectData.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
-        </div>
+        {error ? (
+          <p className="text-center text-red-600" role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        {rows === null ? (
+          <p className="text-center text-slate-500">Loading…</p>
+        ) : rows.length === 0 ? (
+          <p className="mx-auto max-w-lg text-center text-slate-600">
+            Projects will appear here once they are published from the workplace admin.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+            {rows.map((project) => (
+              <ProjectCard
+                key={project.id}
+                title={project.title}
+                tagline={project.tagline}
+                who={project.who}
+                duration={project.duration}
+                format={project.format}
+                description={project.description}
+                brief={project.brief}
+                briefIdea={project.briefIdea}
+                ctaLabel={project.ctaLabel}
+                postedDate={project.postedDate}
+                imageUrl={project.imageUrl}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  )
-}
+  );
+};

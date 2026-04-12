@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ClipboardCheck, Microscope, Play, Rocket, Scale, Search, ShoppingCart, Users } from 'lucide-react';
 import ProgrammeCard from '../components/programmes/ProgrammeCard';
+import ShinyText from '../components/FooterCom/ShinyText';
 import { fetchProgrammes } from '../api/programmesApi';
 import KhsLogo from '../assets/logos/KHS.png';
 import WwoofLogo from '../assets/logos/wwoof.webp';
@@ -166,8 +167,24 @@ export const Programmes = () => {
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/45" aria-hidden />
 
-        <div className="relative px-6 pb-12 pt-32 sm:pt-36 md:pt-40">
-          <div className="mx-auto max-w-6xl">
+        <div className="relative px-6 pb-12 pt-32 sm:pt-36 md:pt-40 [perspective:1500px]">
+          <motion.div
+            className="mx-auto max-w-6xl"
+            initial={
+              reduceMotion
+                ? { opacity: 0, y: 14 }
+                : { opacity: 0, rotateX: 16, y: 36, z: -52 }
+            }
+            animate={
+              reduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, rotateX: 0, y: 0, z: 0 }
+            }
+            transition={{ duration: reduceMotion ? 0.42 : 0.95, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              transformStyle: 'preserve-3d',
+              transformOrigin: '50% 0%',
+              backfaceVisibility: 'hidden',
+            }}
+          >
             <div className="flex flex-col gap-3 sm:gap-4">
               <p className="text-[11px] tracking-[0.25em] uppercase text-white/70 sm:text-xs">REACT Programmes</p>
 
@@ -191,11 +208,14 @@ export const Programmes = () => {
                   to="/contact"
                   className="inline-flex items-center justify-center rounded-full border border-white/35 bg-white/5 px-7 py-3 text-center text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/10 sm:text-base"
                 >
-                  Book a Call with Our Team
+                  Book a Call First
                 </Link>
               </div>
+              <p className="max-w-2xl pt-4 text-sm leading-relaxed text-white/65 sm:text-[0.9375rem]">
+                Admission process varies by programme. We will walk you through everything personally.
+              </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -266,7 +286,15 @@ export const Programmes = () => {
           <div className="text-center">
             <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-700/80 sm:text-xs">The methodology</p>
             <h2 className="mt-3 font-sans text-2xl font-semibold text-slate-900 sm:text-3xl">
-              The <span className="font-semibold text-[#FF6B5C]">REACT</span> Pipeline
+              The <span className="inline-block">
+                  <ShinyText
+                    text="REACT"
+                    speed={3}
+                    color="#FF6B5C"
+                    shineColor="#ffffff"
+                    spread={120}
+                  />
+                </span>{" "} Pipeline
             </h2>
           </div>
 
@@ -358,9 +386,32 @@ export const Programmes = () => {
           ) : rows.length === 0 ? (
             <p className="mt-12 text-center text-slate-600">No programmes published yet.</p>
           ) : (
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
-              {rows.map((p) => (
-                <ProgrammeCard key={p.id ?? p.slug ?? p.title} programme={p} />
+            <div className="grid grid-cols-1 gap-8 [perspective:1400px] md:grid-cols-2 md:gap-10">
+              {rows.map((p, cardIndex) => (
+                <motion.div
+                  key={p.id ?? p.slug ?? p.title}
+                  initial={
+                    reduceMotion
+                      ? { opacity: 0, y: 14 }
+                      : { opacity: 0, rotateX: 11, y: 40, z: -36 }
+                  }
+                  whileInView={
+                    reduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, rotateX: 0, y: 0, z: 0 }
+                  }
+                  transition={{
+                    duration: reduceMotion ? 0.45 : 0.82,
+                    delay: reduceMotion ? cardIndex * 0.04 : cardIndex * 0.1,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  viewport={{ once: true, amount: 0.22, margin: '0px 0px -8% 0px' }}
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transformOrigin: '50% 0%',
+                    backfaceVisibility: 'hidden',
+                  }}
+                >
+                  <ProgrammeCard programme={p} />
+                </motion.div>
               ))}
             </div>
           )}

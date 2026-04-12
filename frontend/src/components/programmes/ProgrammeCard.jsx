@@ -13,8 +13,9 @@ function splitFeatureLine(text) {
  * Public programme card — dynamic info row, features, eligibility, CTA.
  * Footer button defaults to /fellowship/:slug (track page; apply at /fellowship/:slug/forms) when link override is empty.
  * @param {'default'|'detail'} variant - detail: hide footer CTA (detail page has form below)
+ * @param {boolean} preview - admin preview: no navigation on title or CTA
  */
-export default function ProgrammeCard({ programme, variant = 'default', onSelect, selected = false }) {
+export default function ProgrammeCard({ programme, variant = 'default', onSelect, selected = false, preview = false }) {
   const accent =
     normalizeAccentHex(programme.accentColor) ||
     (programme.theme === 'purple' ? '#a855f7' : '#f97316');
@@ -22,9 +23,12 @@ export default function ProgrammeCard({ programme, variant = 'default', onSelect
   const features = Array.isArray(programme.features) ? programme.features.filter(Boolean) : [];
   const explicitLink = programme.buttonLink?.trim();
   const slugPath =
-    programme.slug && String(programme.slug).trim()
+    !preview && programme.slug && String(programme.slug).trim()
       ? `/fellowship/${encodeURIComponent(String(programme.slug).trim())}`
       : null;
+  const hasCtaTarget = Boolean(
+    explicitLink || (programme.slug && String(programme.slug).trim()),
+  );
   const cta = programme.buttonText?.trim() || 'Learn more';
 
   const CtaContent = () => (
@@ -37,6 +41,26 @@ export default function ProgrammeCard({ programme, variant = 'default', onSelect
   );
 
   const renderCta = () => {
+    if (preview) {
+      if (!hasCtaTarget) {
+        return (
+          <span
+            className="pointer-events-none inline-flex select-none rounded-md bg-slate-200 px-6 py-2 text-xs font-bold uppercase tracking-wider text-slate-500"
+            title="Add a URL slug or custom button link to enable this button"
+          >
+            {cta}
+          </span>
+        );
+      }
+      return (
+        <span
+          className="pointer-events-none inline-flex select-none opacity-[0.92]"
+          title="Preview — not clickable"
+        >
+          <CtaContent />
+        </span>
+      );
+    }
     if (!explicitLink && !slugPath) {
       return (
         <span className="inline-flex cursor-not-allowed rounded-md bg-slate-200 px-6 py-2 text-xs font-bold uppercase tracking-wider text-slate-500">

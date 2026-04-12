@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { getSession } from '../../api/workplaceApi';
 
-export default function AdminProgrammeGuard({ children }) {
+export default function AdminProgrammeGuard({ children, loginReturnPath = '/workplace/admin/programmes' }) {
   const [state, setState] = useState('loading');
 
   useEffect(() => {
@@ -29,7 +29,8 @@ export default function AdminProgrammeGuard({ children }) {
     );
   }
   if (state === 'deny') {
-    return <Navigate to="/workplace/login?returnUrl=%2Fworkplace%2Fadmin%2Fprogrammes" replace />;
+    const q = encodeURIComponent(loginReturnPath);
+    return <Navigate to={`/workplace/login?returnUrl=${q}`} replace />;
   }
   return children;
 }
