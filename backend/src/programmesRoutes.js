@@ -37,7 +37,37 @@ function normalizeFormFieldType(t) {
   if (['para', 'paragraph', 'multiline', 'textarea', 'longtext'].includes(s)) return 'para';
   if (['email', 'e-mail', 'mail'].includes(s)) return 'email';
   if (['number', 'numeric', 'integer', 'float', 'decimal'].includes(s)) return 'number';
+  if (['file', 'upload', 'attachment', 'document'].includes(s)) return 'file';
+  if (['dropdown', 'select', 'choice', 'choices', 'list'].includes(s)) return 'dropdown';
   return 'text';
+}
+
+function normalizeDropdownOptions(raw) {
+  if (!Array.isArray(raw)) return [];
+  const out = [];
+  const seen = new Set();
+  for (const item of raw) {
+    const s = String(item ?? '').trim().slice(0, 500);
+    if (!s) continue;
+    const key = s.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+    if (out.length >= 50) break;
+  }
+  return out;
+}
+
+const MAX_FORM_FILE_BYTES = 4 * 1024 * 1024;
+
+function isEmptyAnswer(field, v) {
+  if (v === undefined || v === null) return true;
+  if (field.type === 'file') {
+    if (typeof v !== 'object' || v === null) return true;
+    const b64 = typeof v.dataBase64 === 'string' ? v.dataBase64.trim() : '';
+    return !b64;
+  }
+  return String(v).trim() === '';
 }
 
 function normalizeAccentHex(input) {
@@ -57,12 +87,16 @@ function normalizeFormFields(raw) {
   return raw
     .map((x, idx) => {
       const type = normalizeFormFieldType(x?.type);
+      const options = type === 'dropdown' ? normalizeDropdownOptions(x?.options) : [];
+      const effectiveType = type === 'dropdown' && !options.length ? 'text' : type;
       return {
         id: String(x?.id || `f_${idx}`).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || `f_${idx}`,
         name: String(x?.name ?? '').trim().slice(0, 200),
-        type,
+        type: effectiveType,
         required: !!x?.required,
-        numberAllowDecimals: type === 'number' ? !!x?.numberAllowDecimals : false,
+        numberAllowDecimals: effectiveType === 'number' ? !!x?.numberAllowDecimals : false,
+        fileAccept: effectiveType === 'file' ? String(x?.fileAccept ?? '').trim().slice(0, 200) : '',
+        options: effectiveType === 'dropdown' ? options : [],
       };
     })
     .filter((x) => x.name);
@@ -248,7 +282,7 @@ export function registerProgrammesRoutes(app, pool) {
       const fields = Array.isArray(p.formFields) ? p.formFields : [];
       if (!fields.length) return res.status(400).json({ error: 'This programme has no application form' });
 
-      const missing = fields.filter((f) => f.required && (answers[f.id] === undefined || answers[f.id] === ''));
+      const missing = fields.filter((f) => f.required && isEmptyAnswer(f, answers[f.id]));
       if (missing.length) {
         return res.status(400).json({ error: 'Missing required fields', fields: missing.map((m) => m.id) });
       }
@@ -266,6 +300,44 @@ export function registerProgrammesRoutes(app, pool) {
             return res.status(400).json({ error: `Whole number required for: ${f.name}` });
           }
           sanitized[f.id] = n;
+        } else if (f.type === 'dropdown') {
+          const opts = Array.isArray(f.options) ? f.options : [];
+          const s = String(v).trim().slice(0, 500);
+          if (!s) {
+            if (f.required) {
+              return res.status(400).json({ error: 'Missing required fields', fields: [f.id] });
+            }
+            continue;
+          }
+          if (!opts.includes(s)) {
+            return res.status(400).json({ error: `Invalid choice for: ${f.name}` });
+          }
+          sanitized[f.id] = s;
+        } else if (f.type === 'file') {
+          if (typeof v !== 'object' || v === null || typeof v.dataBase64 !== 'string') {
+            return res.status(400).json({ error: `Invalid file payload for: ${f.name}` });
+          }
+          const fileName = String(v.fileName || 'upload').trim().slice(0, 255);
+          const mimeType = String(v.mimeType || 'application/octet-stream').trim().slice(0, 120);
+          const rawB64 = String(v.dataBase64).replace(/\s/g, '');
+          let buf;
+          try {
+            buf = Buffer.from(rawB64, 'base64');
+          } catch {
+            return res.status(400).json({ error: `Invalid file encoding for: ${f.name}` });
+          }
+          if (!buf.length) {
+            return res.status(400).json({ error: `Empty file for: ${f.name}` });
+          }
+          if (buf.length > MAX_FORM_FILE_BYTES) {
+            return res.status(400).json({ error: `File too large for: ${f.name} (max 4 MB)` });
+          }
+          sanitized[f.id] = {
+            fileName,
+            mimeType,
+            size: buf.length,
+            dataBase64: rawB64,
+          };
         } else {
           sanitized[f.id] = String(v).trim().slice(0, 20000);
         }

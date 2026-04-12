@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Search,
@@ -80,30 +81,7 @@ export default function NewLanding() {
 
   const trackCards = [
     {
-      audience: "For Undergraduates · KCT, Coimbatore",
-      title: "The Venture Fellowship",
-      intro:
-        "Two years inside your engineering degree. One real problem. One registered startup at the end of it.",
-      meta: [
-        { label: "Duration", value: "2 Years" },
-        { label: "Credits", value: "40 Credits" },
-        { label: "Cohort", value: "24 Fellows" },
-        { label: "Next Intake", value: "June 2026" },
-      ],
-      detail:
-        "A 40-credit diploma alongside your B.E. or B.Tech degree. A two-year structured journey from field immersion to a patent filing, tested MVP, and registered startup.",
-      bullets: [
-        "Publication-ready research paper",
-        "Patent filing",
-        "Working MVP",
-        "Registered startup",
-      ],
-      footnote: "Open to KCT students",
-      ctaLabel: "Explore the Fellowship →",
-      accent: "#E46F47",
-      ctaBg: "#E46F47",
-    },
-    {
+      slug: "social-innovation-fellowship",
       audience: "For Postgraduates · KCLAS, Coimbatore",
       title: "The Social Innovation Fellowship",
       intro:
@@ -128,6 +106,7 @@ export default function NewLanding() {
       ctaBg: "#7D5BBE",
     },
     {
+      slug: "young-builders-programme",
       audience: "For School Students · Grade 7-12",
       title: "The Young Builders Programme",
       intro:
@@ -152,6 +131,7 @@ export default function NewLanding() {
       ctaBg: "#13B58C",
     },
     {
+      slug: "founders-track",
       audience: "For Independent Professionals",
       title: "The Founders Track",
       intro:
@@ -461,7 +441,7 @@ export default function NewLanding() {
             <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
               {trackCards.map((card, index) => (
                 <motion.article
-                  key={card.audience}
+                  key={card.slug}
                   {...cardMotion(index)}
                   style={{
                     borderTop: `3px solid ${card.accent}`,
@@ -516,13 +496,13 @@ export default function NewLanding() {
 
                   <div className="mt-auto border-t border-slate-200 px-6 py-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="min-h-[44px] text-sm text-slate-500">{card.footnote}</p>
-                    <a
-                      href="/programmes"
+                    <Link
+                      to={`/fellowship/${card.slug}`}
                       className="inline-flex min-w-[168px] items-center justify-center px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white"
                       style={{ backgroundColor: card.ctaBg }}
                     >
                       {card.ctaLabel}
-                    </a>
+                    </Link>
                   </div>
                 </motion.article>
               ))}

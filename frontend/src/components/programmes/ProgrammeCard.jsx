@@ -11,7 +11,7 @@ function splitFeatureLine(text) {
 
 /**
  * Public programme card — dynamic info row, features, eligibility, CTA.
- * Footer button defaults to /programmes/:slug (application form page) when link override is empty.
+ * Footer button defaults to /fellowship/:slug (track page; apply at /fellowship/:slug/forms) when link override is empty.
  * @param {'default'|'detail'} variant - detail: hide footer CTA (detail page has form below)
  */
 export default function ProgrammeCard({ programme, variant = 'default', onSelect, selected = false }) {
@@ -23,7 +23,7 @@ export default function ProgrammeCard({ programme, variant = 'default', onSelect
   const explicitLink = programme.buttonLink?.trim();
   const slugPath =
     programme.slug && String(programme.slug).trim()
-      ? `/programmes/${encodeURIComponent(String(programme.slug).trim())}`
+      ? `/fellowship/${encodeURIComponent(String(programme.slug).trim())}`
       : null;
   const cta = programme.buttonText?.trim() || 'Learn more';
 

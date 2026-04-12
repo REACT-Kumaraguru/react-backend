@@ -21,13 +21,22 @@ function formToPayload(form) {
     .filter((x) => x.label && x.value);
   const features = (form.features || []).map((s) => String(s).trim()).filter(Boolean);
   const formFields = (form.formFields || [])
-    .map((x) => ({
-      id: String(x.id || '').trim(),
-      name: String(x.name || '').trim(),
-      type: normalizeFormFieldType(x.type),
-      required: !!x.required,
-      numberAllowDecimals: normalizeFormFieldType(x.type) === 'number' ? !!x.numberAllowDecimals : false,
-    }))
+    .map((x) => {
+      const type = normalizeFormFieldType(x.type);
+      const opts = (Array.isArray(x.options) ? x.options : [])
+        .map((o) => String(o ?? '').trim())
+        .filter((o, j, arr) => o && arr.findIndex((t) => t.toLowerCase() === o.toLowerCase()) === j)
+        .slice(0, 50);
+      return {
+        id: String(x.id || '').trim(),
+        name: String(x.name || '').trim(),
+        type,
+        required: !!x.required,
+        numberAllowDecimals: type === 'number' ? !!x.numberAllowDecimals : false,
+        fileAccept: type === 'file' ? String(x.fileAccept || '').trim().slice(0, 200) : '',
+        options: type === 'dropdown' ? opts : [],
+      };
+    })
     .filter((x) => x.name);
   const accent = normalizeAccentHex(form.accentColor) || '#f97316';
   return {
@@ -100,7 +109,21 @@ export default function ProgrammeAdmin() {
       return;
     }
     if (!payload.slug) {
-      toast('URL slug is required (e.g. venture-fellowship)', 'error');
+      toast('URL slug is required (e.g. social-innovation-fellowship)', 'error');
+      return;
+    }
+    const unnamedFields = (form.formFields || []).filter((x) => !String(x.name || '').trim());
+    if (unnamedFields.length) {
+      toast('Each application form row needs a field name, or remove empty rows.', 'error');
+      return;
+    }
+    const badDropdown = (form.formFields || []).find((x) => {
+      if (normalizeFormFieldType(x.type) !== 'dropdown') return false;
+      const opts = (Array.isArray(x.options) ? x.options : []).map((o) => String(o ?? '').trim()).filter(Boolean);
+      return opts.length < 1;
+    });
+    if (badDropdown) {
+      toast('Dropdown fields need at least one choice. Add options or change the type.', 'error');
       return;
     }
     if (!payload.info.length) {
@@ -198,7 +221,7 @@ export default function ProgrammeAdmin() {
                           <td className="px-4 py-3 font-medium text-slate-900">{r.title}</td>
                           <td className="px-4 py-3 font-mono text-xs text-slate-600">
                             {r.slug ? (
-                              <span title={`/programmes/${r.slug}`}>/programmes/{r.slug}</span>
+                              <span title={`/fellowship/${r.slug}`}>/fellowship/{r.slug}</span>
                             ) : (
                               '—'
                             )}

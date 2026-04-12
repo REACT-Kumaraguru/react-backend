@@ -20,6 +20,8 @@ import ContactUs from './pages/ContactUs';
 import { Work } from './pages/Work';
 import { FellowShip } from './components/FellowShip/FellowShip';
 import FellowForm from './components/FellowShip/FellowForm';
+import FellowshipTrackPage from './pages/FellowshipTrackPage';
+import FellowshipTrackFormPage from './pages/FellowshipTrackFormPage';
 import Error404 from './pages/Error';
 import { EntrepreneurIndex } from './pages/EntrepreneurIndex';
 import HackathonLanding from './hackathon-pages/Landing';
@@ -78,7 +80,17 @@ import RiskMNewSubmission from './riskm/pages/RiskMNewSubmission';
 // =====================================================
 function ProgrammeSlugRedirect() {
   const { slug } = useParams();
-  return <Navigate to={`/programmes/${encodeURIComponent(String(slug || '').trim())}`} replace />;
+  return <Navigate to={`/fellowship/${encodeURIComponent(String(slug || '').trim())}`} replace />;
+}
+
+function ProgrammesSlugRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/fellowship/${encodeURIComponent(String(slug || '').trim())}`} replace />;
+}
+
+function FellowshipFormLegacyRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/fellowship/${encodeURIComponent(String(slug || '').trim())}/forms`} replace />;
 }
 
 function AppContent() {
@@ -100,7 +112,7 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/people" element={<People />} />
         <Route path="/programmes" element={<Programmes />} />
-        <Route path="/programmes/:slug" element={<Programmes />} />
+        <Route path="/programmes/:slug" element={<ProgrammesSlugRedirect />} />
         <Route path="/programme/:slug" element={<ProgrammeSlugRedirect />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/why-india?" element={<WhyIndia />} />
@@ -114,6 +126,14 @@ function AppContent() {
         <Route path="/admin/programmes" element={<Navigate to="/workplace/admin/programmes" replace />} />
 
         {/* ================= Fellowship Routes ================= */}
+        <Route
+          path="/fellowship/venture-fellowship/forms"
+          element={<Navigate to="/programmes" replace />}
+        />
+        <Route path="/fellowship/venture-fellowship" element={<Navigate to="/programmes" replace />} />
+        <Route path="/fellowship/:slug/forms" element={<FellowshipTrackFormPage />} />
+        <Route path="/fellowship/:slug/form" element={<FellowshipFormLegacyRedirect />} />
+        <Route path="/fellowship/:slug" element={<FellowshipTrackPage />} />
         <Route path="/fellowship" element={<FellowShip />} />
         <Route path="/apply" element={<FellowForm />} />
 

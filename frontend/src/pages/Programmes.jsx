@@ -1,14 +1,67 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { ClipboardCheck, Microscope, Rocket, Scale, Search, ShoppingCart, Users } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ClipboardCheck, Microscope, Play, Rocket, Scale, Search, ShoppingCart, Users } from 'lucide-react';
 import ProgrammeCard from '../components/programmes/ProgrammeCard';
-import ProgrammeDynamicForm from '../components/programmes/ProgrammeDynamicForm';
 import { fetchProgrammes } from '../api/programmesApi';
 import KhsLogo from '../assets/logos/KHS.png';
 import WwoofLogo from '../assets/logos/wwoof.webp';
 
+/** Set `videoUrl` to a YouTube or Shorts link when ready; empty string keeps a non-clickable placeholder. */
+/** Problem section — scroll story beats (order = reveal sequence). */
+const PROBLEM_STORY_LINES = [
+  { key: 'ideas', kind: 'serif', text: 'You have always had ideas.' },
+  { key: 'notice', kind: 'serif', text: 'You notice things others walk past.' },
+  {
+    key: 'gap-talk',
+    kind: 'serif',
+    text: 'But somewhere between the classroom and the real world, there is a gap nobody talks about.',
+  },
+  { key: 'intel', kind: 'sans', text: 'Not a gap in your intelligence.' },
+  { key: 'ambition', kind: 'sans', text: 'Not a gap in your ambition.' },
+  { key: 'path', kind: 'path', text: 'A gap in the path.' },
+  {
+    key: 'product',
+    kind: 'bold',
+    text: 'You have never been shown how to turn a real problem into a real product.',
+  },
+  {
+    key: 'mentor',
+    kind: 'bold',
+    text: 'You have never had a mentor who has done it themselves.',
+  },
+  {
+    key: 'room',
+    kind: 'bold',
+    text: 'You have never been in a room where everyone around you is building something.',
+  },
+];
+
+const STUDENT_VOICES_PLACEHOLDERS = [
+  { id: 'sv1', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+  { id: 'sv2', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+  { id: 'sv3', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+  { id: 'sv4', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+  { id: 'sv5', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+  { id: 'sv6', name: 'Student name', building: 'What they are building (placeholder)', videoUrl: '' },
+];
+
+function problemLineClass(kind, lineKey) {
+  if (kind === 'sans')
+    return 'mb-10 font-sans text-base font-normal text-slate-700 sm:mb-12 sm:text-lg';
+  if (kind === 'serif' && lineKey === 'gap-talk')
+    return 'mb-14 text-[1.125rem] leading-snug sm:mb-16 sm:text-xl md:text-[1.35rem] md:leading-relaxed';
+  if (kind === 'path') return 'mb-14 font-semibold text-slate-900 sm:mb-16 md:mb-20';
+  if (kind === 'bold') {
+    const base =
+      'font-serif text-[1.05rem] font-bold leading-snug text-slate-900 sm:text-lg md:text-xl';
+    return lineKey === 'room' ? `${base} mb-12 sm:mb-14` : `${base} mb-8 sm:mb-10 md:mb-11`;
+  }
+  return 'mb-10 text-[1.125rem] leading-snug sm:mb-12 sm:text-xl md:text-[1.35rem] md:leading-relaxed';
+}
+
 export const Programmes = () => {
-  const { slug } = useParams();
+  const reduceMotion = useReducedMotion();
   const [rows, setRows] = useState(null);
   const [error, setError] = useState('');
   const cardsRef = useRef(null);
@@ -89,25 +142,6 @@ export const Programmes = () => {
     };
   }, []);
 
-  // If user lands on /programmes/:slug, preselect it once rows load.
-  useEffect(() => {
-    if (!slug) return;
-    if (rows === null) return;
-    const normalized = String(slug || '').trim();
-    if (!normalized) return;
-    // Let layout paint, then scroll to cards.
-    setTimeout(() => {
-      cardsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  }, [slug, rows]);
-
-  const selectedProgramme = useMemo(() => {
-    if (!Array.isArray(rows) || !slug) return null;
-    const normalized = String(slug || '').trim();
-    if (!normalized) return null;
-    return rows.find((p) => String(p?.slug || '').trim() === normalized) || null;
-  }, [rows, slug]);
-
   function scrollToCards() {
     cardsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -116,52 +150,191 @@ export const Programmes = () => {
     <main className="min-h-screen overflow-x-hidden bg-[#F4F6F8] text-[#0F172A]">
       {/* HERO (landing-style) */}
       <section className="relative overflow-hidden bg-[#0F2A44] text-white">
+        {/* Blueprint-style grid: fine cells + slightly stronger major lines */}
         <div
-          className="absolute inset-0 opacity-[0.22]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.10) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
+            backgroundImage: [
+              'linear-gradient(to right, rgba(168, 198, 224, 0.11) 1px, transparent 1px)',
+              'linear-gradient(to bottom, rgba(168, 198, 224, 0.11) 1px, transparent 1px)',
+              'linear-gradient(to right, rgba(200, 220, 240, 0.16) 1px, transparent 1px)',
+              'linear-gradient(to bottom, rgba(200, 220, 240, 0.16) 1px, transparent 1px)',
+            ].join(', '),
+            backgroundSize: '36px 36px, 36px 36px, 144px 144px, 144px 144px',
           }}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" aria-hidden />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/45" aria-hidden />
 
-        <div className="relative px-6 pt-32 pb-12 sm:pt-36 md:pt-40">
+        <div className="relative px-6 pb-12 pt-32 sm:pt-36 md:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-3 sm:gap-4">
-              <p className="text-[11px] tracking-[0.25em] uppercase text-white/70 sm:text-xs">
-                REACT Programmes · Find Your Path
-              </p>
+              <p className="text-[11px] tracking-[0.25em] uppercase text-white/70 sm:text-xs">REACT Programmes</p>
 
-              <h1 className="font-serif text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-                <span className="block text-white">Every kind of builder.</span>
-                <span className="mt-1 block italic text-[#FF6B5C]">One movement.</span>
+              <h1 className="max-w-4xl font-serif text-[1.65rem] font-semibold leading-[1.12] tracking-tight text-white sm:text-4xl md:text-[2.35rem] md:leading-[1.15] lg:max-w-5xl">
+                The fellowship for students who know that knowledge alone doesn’t build ventures — and want to leave
+                with a product, a patent, and a registered startup to prove it.
               </h1>
 
-              <p className="max-w-3xl pt-1 text-sm leading-relaxed text-white/70 sm:text-base">
-                Whether you are in school, in college, in a career, or between two — REACT has a structured path that
-                meets you where you are and takes you somewhere worth going.
-                <br />
-                <br />
-                Four tracks. One standard. Real outputs at the end of every one.
+              <p className="max-w-3xl pt-1 text-base leading-relaxed text-white/80 sm:text-lg">
+                A 12-month venture-building fellowship at KCT, Coimbatore. Real problems. Real communities. Real outputs.
               </p>
 
-              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={scrollToCards}
-                  className="inline-flex items-center justify-center rounded-full bg-[#FF6B5C] px-7 py-3 text-sm text-white transition-colors hover:bg-[#ff5a49] sm:text-base"
+              <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <Link
+                  to="/apply"
+                  className="inline-flex items-center justify-center rounded-full bg-[#FF6B5C] px-7 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#ff5a49] sm:text-base"
                 >
-                  Find your path
-                </button>
+                  Apply Now
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center rounded-full border border-white/35 bg-white/5 px-7 py-3 text-center text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/10 sm:text-base"
+                >
+                  Book a Call with Our Team
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* PROGRAMME CARDS */}
+      {/* Problem — after hero (scroll-driven 3D story beats) */}
+      <section
+        className="border-b border-slate-200/90 bg-[#EEF1F6] px-6 py-20 text-slate-800 sm:py-24 md:py-28"
+        aria-labelledby="programmes-problem-heading"
+      >
+        <div className="mx-auto max-w-2xl [perspective:1200px]">
+          <h2 id="programmes-problem-heading" className="sr-only">
+            The gap between classroom and the real world
+          </h2>
+
+          <div className="font-serif text-[1.125rem] leading-snug text-slate-900 sm:text-xl sm:leading-snug md:text-[1.35rem] md:leading-relaxed">
+            {PROBLEM_STORY_LINES.map((line, index) => {
+              const motionProps = reduceMotion
+                ? {
+                    initial: { opacity: 0, y: 12 },
+                    whileInView: { opacity: 1, y: 0 },
+                    transition: { duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] },
+                    viewport: { once: true, amount: 0.32, margin: '0px 0px -10% 0px' },
+                  }
+                : {
+                    initial: { opacity: 0, rotateX: 15, y: 48, z: -42 },
+                    whileInView: { opacity: 1, rotateX: 0, y: 0, z: 0 },
+                    transition: { duration: 0.88, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] },
+                    viewport: { once: true, amount: 0.26, margin: '0px 0px -14% 0px' },
+                  };
+
+              return (
+                <motion.div
+                  key={line.key}
+                  {...motionProps}
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transformOrigin: '50% 0%',
+                    backfaceVisibility: 'hidden',
+                  }}
+                >
+                  <p className={problemLineClass(line.kind, line.key)}>{line.text}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, rotateX: 10, y: 24, z: -20 }}
+            whileInView={{ opacity: 1, rotateX: 0, y: 0, z: 0 }}
+            transition={{
+              duration: reduceMotion ? 0.4 : 0.85,
+              delay: reduceMotion ? 0.05 : PROBLEM_STORY_LINES.length * 0.11 + 0.05,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            viewport={{ once: true, amount: 0.4 }}
+            style={{ transformStyle: 'preserve-3d', transformOrigin: '50% 0%' }}
+            className="mt-20 border-t border-slate-300/70 pt-14 text-center sm:mt-24 sm:pt-16"
+          >
+            <p className="font-serif text-lg font-normal tracking-wide text-slate-500 sm:text-xl">
+              That is what REACT is.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Methodology / Pipeline (landing-style) */}
+      <section className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
+          <div className="text-center">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-700/80 sm:text-xs">The methodology</p>
+            <h2 className="mt-3 font-sans text-2xl font-semibold text-slate-900 sm:text-3xl">
+              The <span className="font-semibold text-[#FF6B5C]">REACT</span> Pipeline
+            </h2>
+          </div>
+
+          <div className="mt-12">
+            {/* Desktop */}
+            <div className="relative hidden w-full lg:grid lg:grid-cols-7 lg:gap-x-3">
+              <div className="pointer-events-none absolute left-0 right-0 top-[23px] z-0 h-[2px] bg-[#E5E7EB]" aria-hidden />
+              {pipeline.map(({ title, subtitle, Icon }, idx) => {
+                const isLast = idx === pipeline.length - 1;
+                return (
+                  <div key={title} className="group relative z-10 flex min-w-0 flex-col items-center text-center">
+                    <div className="flex h-12 w-full items-center justify-center">
+                      <div
+                        className={[
+                          'relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all duration-200',
+                          isLast
+                            ? 'border-[#2F80ED] bg-[#2F80ED] text-white shadow-sm'
+                            : 'border-slate-200 bg-slate-100 text-slate-600 group-hover:border-[#FF6B5C] group-hover:bg-white group-hover:text-[#FF6B5C] group-hover:shadow-sm',
+                        ].join(' ')}
+                      >
+                        <Icon size={18} strokeWidth={1.75} />
+                      </div>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold text-slate-900">{title}</p>
+                    <p className="mt-1 max-w-[9rem] text-[11px] leading-snug text-slate-500 group-hover:text-slate-600">
+                      {subtitle}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile / tablet */}
+            <div className="relative pl-1 lg:hidden">
+              <div className="pointer-events-none absolute bottom-6 left-[23px] top-6 z-0 w-[2px] bg-[#E5E7EB]" aria-hidden />
+              <ul className="relative z-10">
+                {pipeline.map(({ title, subtitle, Icon }, idx) => {
+                  const isLast = idx === pipeline.length - 1;
+                  return (
+                    <li key={title} className="group flex gap-4 pb-10 last:pb-0 sm:gap-5">
+                      <div className="relative z-10 flex w-12 shrink-0 justify-center">
+                        <div
+                          className={[
+                            'flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200',
+                            isLast
+                              ? 'border-[#2F80ED] bg-[#2F80ED] text-white shadow-sm'
+                              : 'border-slate-200 bg-slate-100 text-slate-600 group-hover:border-[#FF6B5C] group-hover:bg-white group-hover:text-[#FF6B5C] group-hover:shadow-sm',
+                          ].join(' ')}
+                        >
+                          <Icon size={18} strokeWidth={1.75} />
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1 pt-1">
+                        <p className="text-xs font-semibold text-slate-900">{title}</p>
+                        <p className="mt-1 text-[11px] leading-snug text-slate-500 group-hover:text-slate-600">
+                          {subtitle}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROGRAMME CARDS (catalogue) */}
       <section className="px-6 py-14 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 text-center sm:mb-10" ref={cardsRef} id="programmes">
@@ -170,20 +343,9 @@ export const Programmes = () => {
               Programmes that meet you in the field
             </h2>
             <p className="mx-auto mt-3 max-w-3xl text-base text-slate-600 sm:text-lg">
-              Choose a track, see the details, and apply right here.
+              Choose a track, see the details, and apply on each programme&apos;s fellowship page.
             </p>
           </div>
-
-          {slug ? (
-            <div className="mb-8 flex items-center justify-center">
-              <Link
-                to="/programmes"
-                className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
-              >
-                ← Back to all programmes
-              </Link>
-            </div>
-          ) : null}
 
           {error ? (
             <p className="mt-8 text-center text-red-600" role="alert">
@@ -197,34 +359,9 @@ export const Programmes = () => {
             <p className="mt-12 text-center text-slate-600">No programmes published yet.</p>
           ) : (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
-              {rows.map((p) => {
-                const pSlug = String(p?.slug || '').trim();
-                const isSelected = !!slug && pSlug && pSlug === String(slug).trim();
-                return (
-                  <React.Fragment key={p.id ?? p.slug ?? p.title}>
-                    <ProgrammeCard programme={p} selected={isSelected} />
-                    {isSelected ? (
-                      <div className="md:col-span-2">
-                        <div className="mt-2 rounded-2xl border border-slate-200 bg-white/60 p-5 shadow-sm backdrop-blur sm:p-6">
-                          {selectedProgramme?.formFields?.length > 0 && selectedProgramme?.slug ? (
-                            <ProgrammeDynamicForm
-                              slug={selectedProgramme.slug}
-                              fields={selectedProgramme.formFields}
-                            />
-                          ) : (
-                            <div className="rounded-xl border border-slate-200 bg-white px-6 py-8 text-center">
-                              <p className="text-base font-semibold text-slate-900">Applications are not open yet.</p>
-                              <p className="mt-2 text-sm text-slate-600">
-                                This programme doesn’t have an application form published.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ) : null}
-                  </React.Fragment>
-                );
-              })}
+              {rows.map((p) => (
+                <ProgrammeCard key={p.id ?? p.slug ?? p.title} programme={p} />
+              ))}
             </div>
           )}
         </div>
@@ -306,6 +443,73 @@ export const Programmes = () => {
         </div>
       </section>
 
+      {/* Student Voices — after Entrepreneur Index */}
+      <section
+        id="student-voices"
+        className="border-t border-slate-200 bg-white px-6 py-14 sm:py-16"
+        aria-labelledby="student-voices-heading"
+      >
+        <div className="mx-auto max-w-6xl">
+          <header className="text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-slate-500">Student voices</p>
+            <h2 id="student-voices-heading" className="mt-3 font-serif text-3xl font-semibold text-slate-900 sm:text-4xl">
+              Do not take our word for it.
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600 sm:text-lg">
+              Hear from the people building inside REACT right now.
+            </p>
+          </header>
+
+          <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {STUDENT_VOICES_PLACEHOLDERS.map((v) => {
+              const hasLink = Boolean(String(v.videoUrl || '').trim());
+              const thumb = (
+                <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-200 via-slate-300 to-slate-500">
+                  <span className="sr-only">Video thumbnail placeholder</span>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <span
+                      className="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 text-[#0F2A44] shadow-lg ring-1 ring-black/10 transition group-hover:scale-105 group-hover:shadow-xl"
+                      aria-hidden
+                    >
+                      <Play className="ml-1 h-7 w-7" fill="currentColor" strokeWidth={0} />
+                    </span>
+                  </div>
+                </div>
+              );
+              const meta = (
+                <div className="space-y-1 p-4">
+                  <p className="font-semibold text-slate-900">{v.name}</p>
+                  <p className="text-sm leading-snug text-slate-600">{v.building}</p>
+                </div>
+              );
+              const shellClass =
+                'group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md';
+
+              return (
+                <li key={v.id}>
+                  {hasLink ? (
+                    <a
+                      href={v.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${shellClass} block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF6B5C]`}
+                    >
+                      {thumb}
+                      {meta}
+                    </a>
+                  ) : (
+                    <article className={shellClass}>
+                      {thumb}
+                      {meta}
+                    </article>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
       {/* Admission steps (landing-style) */}
       <section className="bg-[#F4F6F8] py-14 sm:py-16">
         <div className="mx-auto max-w-6xl px-6">
@@ -342,80 +546,6 @@ export const Programmes = () => {
               >
                 Book a Call First
               </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Methodology / Pipeline (landing-style) */}
-      <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
-          <div className="text-center">
-            <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-700/80 sm:text-xs">The methodology</p>
-            <h2 className="mt-3 font-sans text-2xl font-semibold text-slate-900 sm:text-3xl">
-              The <span className="font-semibold text-[#FF6B5C]">REACT</span> Pipeline
-            </h2>
-          </div>
-
-          <div className="mt-12">
-            {/* Desktop */}
-            <div className="relative hidden w-full lg:grid lg:grid-cols-7 lg:gap-x-3">
-              <div className="pointer-events-none absolute left-0 right-0 top-[23px] z-0 h-[2px] bg-[#E5E7EB]" aria-hidden />
-              {pipeline.map(({ title, subtitle, Icon }, idx) => {
-                const isLast = idx === pipeline.length - 1;
-                return (
-                  <div key={title} className="group relative z-10 flex min-w-0 flex-col items-center text-center">
-                    <div className="flex h-12 w-full items-center justify-center">
-                      <div
-                        className={[
-                          'relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all duration-200',
-                          isLast
-                            ? 'border-[#2F80ED] bg-[#2F80ED] text-white shadow-sm'
-                            : 'border-slate-200 bg-slate-100 text-slate-600 group-hover:border-[#FF6B5C] group-hover:bg-white group-hover:text-[#FF6B5C] group-hover:shadow-sm',
-                        ].join(' ')}
-                      >
-                        <Icon size={18} strokeWidth={1.75} />
-                      </div>
-                    </div>
-                    <p className="mt-4 text-xs font-semibold text-slate-900">{title}</p>
-                    <p className="mt-1 max-w-[9rem] text-[11px] leading-snug text-slate-500 group-hover:text-slate-600">
-                      {subtitle}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Mobile / tablet */}
-            <div className="relative pl-1 lg:hidden">
-              <div className="pointer-events-none absolute bottom-6 left-[23px] top-6 z-0 w-[2px] bg-[#E5E7EB]" aria-hidden />
-              <ul className="relative z-10">
-                {pipeline.map(({ title, subtitle, Icon }, idx) => {
-                  const isLast = idx === pipeline.length - 1;
-                  return (
-                    <li key={title} className="group flex gap-4 pb-10 last:pb-0 sm:gap-5">
-                      <div className="relative z-10 flex w-12 shrink-0 justify-center">
-                        <div
-                          className={[
-                            'flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200',
-                            isLast
-                              ? 'border-[#2F80ED] bg-[#2F80ED] text-white shadow-sm'
-                              : 'border-slate-200 bg-slate-100 text-slate-600 group-hover:border-[#FF6B5C] group-hover:bg-white group-hover:text-[#FF6B5C] group-hover:shadow-sm',
-                          ].join(' ')}
-                        >
-                          <Icon size={18} strokeWidth={1.75} />
-                        </div>
-                      </div>
-                      <div className="min-w-0 flex-1 pt-1">
-                        <p className="text-xs font-semibold text-slate-900">{title}</p>
-                        <p className="mt-1 text-[11px] leading-snug text-slate-500 group-hover:text-slate-600">
-                          {subtitle}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
             </div>
           </div>
         </div>

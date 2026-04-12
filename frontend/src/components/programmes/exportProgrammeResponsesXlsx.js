@@ -28,6 +28,10 @@ function resolveFieldColumns(programme, submissions) {
 function cellValue(v) {
   if (v === undefined || v === null) return '';
   if (typeof v === 'number') return v;
+  if (typeof v === 'object' && v !== null && typeof v.dataBase64 === 'string' && v.fileName) {
+    const kb = typeof v.size === 'number' ? Math.max(1, Math.round(v.size / 1024)) : '';
+    return kb !== '' ? `[file] ${v.fileName} (${kb} KB)` : `[file] ${v.fileName}`;
+  }
   return String(v);
 }
 

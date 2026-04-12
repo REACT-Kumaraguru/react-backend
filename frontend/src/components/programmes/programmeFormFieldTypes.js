@@ -10,7 +10,9 @@ export function normalizeFormFieldType(t) {
   if (['para', 'paragraph', 'multiline', 'textarea', 'longtext'].includes(s)) return 'para';
   if (['email', 'e-mail', 'mail'].includes(s)) return 'email';
   if (['number', 'numeric', 'integer', 'float', 'decimal'].includes(s)) return 'number';
+  if (['file', 'upload', 'attachment', 'document'].includes(s)) return 'file';
+  if (['dropdown', 'select', 'choice', 'choices', 'list'].includes(s)) return 'dropdown';
   return 'text';
 }
 
-export const FORM_FIELD_TYPES = ['text', 'para', 'number', 'email'];
+export const FORM_FIELD_TYPES = ['text', 'para', 'number', 'email', 'file', 'dropdown'];

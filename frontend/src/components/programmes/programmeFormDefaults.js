@@ -7,7 +7,15 @@ function newFieldId() {
 }
 
 export function emptyFormField() {
-  return { id: newFieldId(), name: '', type: 'text', required: false, numberAllowDecimals: false };
+  return {
+    id: newFieldId(),
+    name: '',
+    type: 'text',
+    required: false,
+    numberAllowDecimals: false,
+    fileAccept: '',
+    options: [''],
+  };
 }
 
 export function emptyProgrammeForm() {
@@ -41,13 +49,25 @@ export function programmeToForm(p) {
   const rawFields = Array.isArray(p.formFields) ? p.formFields : [];
   const formFields =
     rawFields.length > 0
-      ? rawFields.map((x) => ({
-          id: x.id || newFieldId(),
-          name: x.name || '',
-          type: normalizeFormFieldType(x.type),
-          required: !!x.required,
-          numberAllowDecimals: !!x.numberAllowDecimals,
-        }))
+      ? rawFields.map((x) => {
+          const type = normalizeFormFieldType(x.type);
+          const rawOpts = Array.isArray(x.options) ? x.options : [];
+          const options =
+            type === 'dropdown'
+              ? rawOpts.length
+                ? rawOpts.map((o) => String(o ?? '').trim())
+                : ['']
+              : [];
+          return {
+            id: x.id || newFieldId(),
+            name: x.name || '',
+            type,
+            required: !!x.required,
+            numberAllowDecimals: !!x.numberAllowDecimals,
+            fileAccept: String(x.fileAccept || '').trim().slice(0, 200),
+            options,
+          };
+        })
       : [];
   const accent =
     normalizeAccentHex(p.accentColor) ||

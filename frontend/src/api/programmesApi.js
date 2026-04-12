@@ -26,7 +26,7 @@ export async function fetchProgramme(id) {
   return data;
 }
 
-/** Public — load one programme by URL slug for /programmes/:slug */
+/** Public — load one programme by URL slug (public page: /fellowship/:slug; form: /fellowship/:slug/forms) */
 export async function fetchProgrammeBySlug(slug) {
   const enc = encodeURIComponent(String(slug || '').trim());
   const res = await fetch(apiUrl(`/api/programmes/slug/${enc}`));

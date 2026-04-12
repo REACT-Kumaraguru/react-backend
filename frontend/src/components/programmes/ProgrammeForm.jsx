@@ -59,6 +59,14 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
     onChange({ ...form, formFields: next });
   }
 
+  /** One update — avoids losing fields when chaining (parent only sees last setState). */
+  function patchFormField(i, patch) {
+    const next = [...(form.formFields || [])];
+    const cur = next[i] || {};
+    next[i] = { ...cur, ...patch };
+    onChange({ ...form, formFields: next });
+  }
+
   function addFormField() {
     onChange({ ...form, formFields: [...(form.formFields || []), emptyFormField()] });
   }
@@ -66,6 +74,26 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
   function removeFormField(i) {
     const next = (form.formFields || []).filter((_, j) => j !== i);
     onChange({ ...form, formFields: next });
+  }
+
+  function setDropdownOption(i, oi, v) {
+    const row = (form.formFields || [])[i] || {};
+    const opts = [...(Array.isArray(row.options) ? row.options : [''])];
+    opts[oi] = v;
+    patchFormField(i, { options: opts });
+  }
+
+  function addDropdownOption(i) {
+    const row = (form.formFields || [])[i] || {};
+    const opts = [...(Array.isArray(row.options) ? row.options : ['']), ''];
+    patchFormField(i, { options: opts });
+  }
+
+  function removeDropdownOption(i, oi) {
+    const row = (form.formFields || [])[i] || {};
+    const prev = Array.isArray(row.options) ? row.options : [''];
+    const opts = prev.filter((_, j) => j !== oi);
+    patchFormField(i, { options: opts.length ? opts : [''] });
   }
 
   return (
@@ -147,7 +175,7 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
       <div>
         <div className="flex flex-wrap items-end justify-between gap-2">
           <label className={`${label} flex-1`} htmlFor={`${idPrefix}-slug`}>
-            URL slug * <span className="font-normal normal-case text-slate-400">/programmes/…</span>
+            URL slug * <span className="font-normal normal-case text-slate-400">/fellowship/…</span>
           </label>
           <button
             type="button"
@@ -162,10 +190,13 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
           className={input}
           value={form.slug}
           onChange={(e) => setField('slug', e.target.value)}
-          placeholder="e.g. venture-fellowship"
+          placeholder="e.g. social-innovation-fellowship"
           required
         />
-        <p className="mt-1 text-xs text-slate-500">Public page: /programmes/{form.slug?.trim() || 'your-slug'}</p>
+        <p className="mt-1 text-xs text-slate-500">
+          Public page: /fellowship/{form.slug?.trim() || 'your-slug'} — form: /fellowship/{form.slug?.trim() || 'your-slug'}
+          /forms
+        </p>
       </div>
 
       <div>
@@ -266,7 +297,8 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
           <div>
             <span className="text-sm font-semibold text-slate-800">Application form (optional)</span>
             <p className="mt-0.5 text-xs text-slate-600">
-              Shown on the programme page after details. Add inputs like Forms: name, type (text, paragraph, number, email).
+              Shown on /fellowship/your-slug/forms. Types: text, paragraph, number, email, file upload, dropdown (choices
+              you define).
             </p>
           </div>
           <button
@@ -279,7 +311,7 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
         </div>
         <div className="space-y-4">
           {(form.formFields || []).length === 0 ? (
-            <p className="text-sm text-slate-500">No fields — add inputs for applicants to fill on /programmes/your-slug</p>
+            <p className="text-sm text-slate-500">No fields — add inputs for applicants to fill on /fellowship/your-slug/forms</p>
           ) : null}
           {(form.formFields || []).map((row, i) => (
             <div key={row.id || i} className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
@@ -302,17 +334,28 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
                     className={input}
                     value={normalizeFormFieldType(row.type)}
                     onChange={(e) => {
-                      e.stopPropagation();
                       const t = e.target.value;
-                      setFormField(i, 'type', t);
-                      if (t !== 'number') setFormField(i, 'numberAllowDecimals', false);
+                      const cur = (form.formFields || [])[i] || {};
+                      const hasOpts = Array.isArray(cur.options) && cur.options.some((s) => String(s ?? '').trim());
+                      patchFormField(i, {
+                        type: t,
+                        numberAllowDecimals: t === 'number' ? !!cur.numberAllowDecimals : false,
+                        fileAccept: t === 'file' ? String(cur.fileAccept || '').trim() : '',
+                        options:
+                          t === 'dropdown'
+                            ? hasOpts
+                              ? cur.options
+                              : ['Option 1', 'Option 2']
+                            : [],
+                      });
                     }}
-                    onMouseDown={(e) => e.stopPropagation()}
                   >
                     <option value="text">Text (single line)</option>
                     <option value="para">Paragraph</option>
                     <option value="number">Number</option>
                     <option value="email">Email</option>
+                    <option value="file">File upload</option>
+                    <option value="dropdown">Dropdown</option>
                   </select>
                 </div>
                 <label className="mb-2 flex cursor-pointer items-center gap-2 text-sm text-slate-700">
@@ -324,7 +367,7 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
                   />
                   Required
                 </label>
-                {row.type === 'number' ? (
+                {normalizeFormFieldType(row.type) === 'number' ? (
                   <label className="mb-2 flex cursor-pointer items-center gap-2 text-sm text-slate-700">
                     <input
                       type="checkbox"
@@ -334,6 +377,54 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
                     />
                     Allow decimals
                   </label>
+                ) : null}
+                {normalizeFormFieldType(row.type) === 'file' ? (
+                  <div className="w-full min-w-[200px] flex-1 basis-full sm:basis-auto">
+                    <label className={label} htmlFor={`${idPrefix}-faccept-${i}`}>
+                      Accepted types (optional)
+                    </label>
+                    <input
+                      id={`${idPrefix}-faccept-${i}`}
+                      className={input}
+                      value={row.fileAccept || ''}
+                      onChange={(e) => setFormField(i, 'fileAccept', e.target.value)}
+                      placeholder=".pdf,.doc,.docx,image/*"
+                    />
+                  </div>
+                ) : null}
+                {normalizeFormFieldType(row.type) === 'dropdown' ? (
+                  <div className="w-full basis-full rounded-lg border border-dashed border-slate-200 bg-slate-50/90 p-3">
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dropdown choices</span>
+                      <button
+                        type="button"
+                        onClick={() => addDropdownOption(i)}
+                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      >
+                        <Plus className="h-3 w-3" /> Add choice
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {(Array.isArray(row.options) && row.options.length ? row.options : ['']).map((opt, oi) => (
+                        <div key={`${row.id}-opt-${oi}`} className="flex gap-2">
+                          <input
+                            className={input}
+                            value={opt}
+                            onChange={(e) => setDropdownOption(i, oi, e.target.value)}
+                            placeholder={`Choice ${oi + 1}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeDropdownOption(i, oi)}
+                            className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                            aria-label="Remove choice"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ) : null}
                 <button
                   type="button"
@@ -373,7 +464,7 @@ export default function ProgrammeForm({ value, onChange, idPrefix = 'pf' }) {
             className={input}
             value={form.buttonLink}
             onChange={(e) => setField('buttonLink', e.target.value)}
-            placeholder="Leave empty = link to form page (/programmes/slug)"
+            placeholder="Leave empty = link to track page (/fellowship/slug) and /fellowship/slug/forms"
           />
           <p className="mt-1 text-xs text-slate-500">
             Leave empty so visitors use the button to go to the form. Set a URL only to send them elsewhere instead.
