@@ -1,14 +1,5 @@
-import React from 'react'
+import React from 'react';
+import NewLanding from '../components/Landing Components/newLanding/NewLanding';
 
-import { Hero } from '../components/Hero'
-
-export const Landing = () => {
-  return (
-    <>
-        <main className="min-h-screen bg-[#FEF4EA]">
-            <Hero />
-        </main>
-
-    </>
-  )
-}
+/** Site home (`/`) — full landing experience */
+export const Landing = () => <NewLanding />;

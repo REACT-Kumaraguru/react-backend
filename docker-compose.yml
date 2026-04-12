@@ -1,0 +1,56 @@
+# Credentials must match between `db` and `api` (DATABASE_URL).
+# If you see: password authentication failed for user "reactwork"
+# your Postgres volume was initialized with different settings. Reset it:
+#   docker compose down -v
+#   docker compose up --build
+
+name: react-web
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reactwork}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reactwork}
+      POSTGRES_DB: ${POSTGRES_DB:-reactworkplace}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/docker/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./backend/docker/02-migrate.sql:/docker-entrypoint-initdb.d/02-migrate.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-reactwork}:${POSTGRES_PASSWORD:-reactwork}@db:5432/${POSTGRES_DB:-reactworkplace}
+      ADMIN_EMAIL: react@kct.ac.in
+      ADMIN_PASSWORD: react@2026
+      SESSION_SECRET: ${SESSION_SECRET:-react-workplace-session-secret-change-me}
+      SESSION_COOKIE_SECURE: "false"
+      TRUST_PROXY: "1"
+      CORS_ORIGIN: http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  uploads:

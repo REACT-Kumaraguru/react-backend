@@ -1,0 +1,9 @@
+{
+  "name": "react-web-stack",
+  "private": true,
+  "scripts": {
+    "docker:up": "docker compose up --build",
+    "docker:up:detached": "docker compose up --build -d",
+    "docker:down": "docker compose down"
+  }
+}

@@ -28,3 +28,13 @@
     transform: translateX(-50%);
   }
 }
+
+/* Profile dashboard: seamless horizontal ticker */
+.profile-marquee-inner {
+  display: flex;
+  width: 200%;
+  animation: marquee 42s linear infinite;
+}
+.profile-marquee-inner:hover {
+  animation-play-state: paused;
+}

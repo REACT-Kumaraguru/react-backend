@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 
 // ================= Layout Components =================
 import { Navbar } from "./components/Navbar";
@@ -21,6 +21,7 @@ import { Work } from './pages/Work';
 import { FellowShip } from './components/FellowShip/FellowShip';
 import FellowForm from './components/FellowShip/FellowForm';
 import Error404 from './pages/Error';
+import { EntrepreneurIndex } from './pages/EntrepreneurIndex';
 import HackathonLanding from './hackathon-pages/Landing';
 import Solve4PurposeProblems from './hackathon-pages/Solve4PurposeProblems';
 import Solve4PurposeForm from './hackathon-pages/Solve4PurposeForm';
@@ -49,20 +50,48 @@ import { InterestForm } from './components/WorkCom/InterestForm';
 
 // ================= Project Specific =================
 import { KhyoraMain } from './components/projectCom/khyoraCom/KhyoraMain';
+import WorkplaceLogin from './pages/WorkplaceLogin';
+import WorkplaceRegister from './pages/WorkplaceRegister';
+import WorkplaceUserDashboard from './pages/WorkplaceUserDashboard';
+import AdminWorkplaceLayout from './layouts/AdminWorkplaceLayout';
+import UserWorkplaceLayout from './layouts/UserWorkplaceLayout';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminUsersLayout from './layouts/AdminUsersLayout';
+import AdminActiveUsersPage from './pages/admin/AdminActiveUsersPage';
+import AdminODPage from './pages/admin/AdminODPage';
+import AdminProjectsPage from './pages/admin/AdminProjectsPage';
+import AdminProgrammeGuard from './components/programmes/AdminProgrammeGuard';
+import ProgrammeAdmin from './components/programmes/ProgrammeAdmin';
+import { ToastProvider } from './components/programmes/Toast';
+import AdminWorkplaceRolesPage from './pages/admin/AdminWorkplaceRolesPage';
+import AdminAdminsPage from './pages/admin/AdminAdminsPage';
+import OdHubPage from './pages/workplace/OdHubPage';
+import OdApplyPage from './pages/workplace/OdApplyPage';
+import RiskMLayout from './riskm/RiskMLayout';
+import RiskMMySubmissions from './riskm/pages/RiskMMySubmissions';
+import RiskMAdmin from './riskm/pages/RiskMAdmin';
+import RiskMViewPage from './riskm/pages/RiskMViewPage';
+import RiskMNewSubmission from './riskm/pages/RiskMNewSubmission';
 
 // =====================================================
 // AppContent handles conditional layout rendering
 // =====================================================
+function ProgrammeSlugRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/programmes/${encodeURIComponent(String(slug || '').trim())}`} replace />;
+}
+
 function AppContent() {
   const location = useLocation();
   const isKhyoraPage = location.pathname === '/khyora';
+  const isWorkplace = location.pathname.startsWith('/workplace');
 
   return (
     <>
       <ScrollToTop />
 
-      {/* Hide Navbar on Khyora page */}
-      {!isKhyoraPage && <Navbar />}
+      {/* Hide Navbar on Khyora and workplace (includes admin sidebar) */}
+      {!isKhyoraPage && !isWorkplace && <Navbar />}
 
       <Routes>
 
@@ -71,12 +100,18 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/people" element={<People />} />
         <Route path="/programmes" element={<Programmes />} />
+        <Route path="/programmes/:slug" element={<Programmes />} />
+        <Route path="/programme/:slug" element={<ProgrammeSlugRedirect />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/why-india?" element={<WhyIndia />} />
         <Route path="/explore-us" element={<ExploreUS />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/announcements" element={<Announcement />} />
         <Route path="/work" element={<Work />} />
+        <Route path="/entrepreneur-index" element={<EntrepreneurIndex />} />
+        <Route path="/enterpernur-index" element={<Navigate to="/entrepreneur-index" replace />} />
+
+        <Route path="/admin/programmes" element={<Navigate to="/workplace/admin/programmes" replace />} />
 
         {/* ================= Fellowship Routes ================= */}
         <Route path="/fellowship" element={<FellowShip />} />
@@ -118,6 +153,51 @@ function AppContent() {
         <Route path="/solve4purpose/register" element={<Solve4PurposeForm />} />
         <Route path="/solve4purpose/problems" element={<Solve4PurposeProblems />} />
 
+        {/* ================= React Workplace (auth + admin) ================= */}
+        <Route path="/workplace/login" element={<WorkplaceLogin />} />
+        <Route path="/workplace/register" element={<WorkplaceRegister />} />
+        <Route path="/workplace/admin" element={<AdminWorkplaceLayout />}>
+          <Route index element={<Navigate to="users/pending" replace />} />
+          <Route path="users" element={<AdminUsersLayout />}>
+            <Route index element={<Navigate to="pending" replace />} />
+            <Route path=":filter" element={<AdminUsersPage />} />
+          </Route>
+          <Route path="active-users" element={<AdminActiveUsersPage />} />
+          <Route path="od" element={<AdminODPage />} />
+          <Route path="manage-admins" element={<AdminAdminsPage />} />
+          <Route path="registration-roles" element={<AdminWorkplaceRolesPage />} />
+          <Route path="projects" element={<AdminProjectsPage />} />
+          <Route
+            path="programmes"
+            element={
+              <AdminProgrammeGuard>
+                <ProgrammeAdmin />
+              </AdminProgrammeGuard>
+            }
+          />
+          <Route path="riskm" element={<RiskMLayout />}>
+            <Route index element={<Navigate to="admin" replace />} />
+            <Route path="admin" element={<RiskMAdmin />} />
+            <Route path="view/:id" element={<RiskMViewPage />} />
+          </Route>
+        </Route>
+        <Route path="/workplace" element={<UserWorkplaceLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<WorkplaceUserDashboard />} />
+          <Route path="od" element={<OdHubPage />} />
+          <Route path="od/apply" element={<OdApplyPage />} />
+          <Route path="riskm" element={<RiskMLayout />}>
+            <Route index element={<Navigate to="submissions" replace />} />
+            <Route path="submissions" element={<RiskMMySubmissions />} />
+            <Route path="new" element={<RiskMNewSubmission />} />
+            <Route path="view/:id" element={<RiskMViewPage />} />
+          </Route>
+        </Route>
+        <Route path="/login" element={<Navigate to="/workplace/login" replace />} />
+        <Route path="/register" element={<Navigate to="/workplace/register" replace />} />
+        <Route path="/admin" element={<Navigate to="/workplace/admin/users/pending" replace />} />
+        <Route path="/riskm/*" element={<Navigate to="/workplace/riskm/submissions" replace />} />
+
         {/* ================= Standalone Project Route ================= */}
         <Route path="/khyora" element={<KhyoraMain />} />
 
@@ -126,8 +206,8 @@ function AppContent() {
 
       </Routes>
 
-      {/* Hide Footer on Khyora page */}
-      {!isKhyoraPage && <Footer />}
+      {/* Hide Footer on Khyora and workplace */}
+      {!isKhyoraPage && !isWorkplace && <Footer />}
     </>
   );
 }
@@ -139,7 +219,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </Router>
   );
 }

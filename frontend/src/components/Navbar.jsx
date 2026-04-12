@@ -24,7 +24,7 @@ export const Navbar = () => {
     { name: "Why India?", path: "/why-india?" },
     { name: "Explore Us", path: "/explore-us" },
     { name: "Work With Us", path: "/work" },
-    { name: "Contact", path: "/contact" }
+    { name: "Contact", path: "/contact" },
   ];
 
   // Helper function to handle active link styling
@@ -68,29 +68,45 @@ export const Navbar = () => {
 
         {/* Action + Hamburger */}
         <div className="flex items-center gap-3 flex-shrink-0">
-  <Link to="/solve4purpose">
-    <button
-      className="
-        hidden lg:block
-        bg-[#FF4D4D]
-        text-white
-        font-bold
-        px-8 py-3
-        rounded-xl
-        transition-all
-        duration-300
-        shadow-md
-        hover:shadow-[6px_6px_0px_#1E293B]
-        hover:-translate-x-1
-        hover:-translate-y-1
-        active:translate-x-0
-        active:translate-y-0
-        active:shadow-md
-      "
-    >
-      SOLVE 4 PURPOSE
-    </button>
-  </Link>
+          <Link to="/workplace/login" className="hidden lg:block">
+            <button
+              type="button"
+              className="
+                px-6 py-3
+                rounded-xl
+                border-2 border-[#2D334A]
+                text-[#2D334A]
+                text-xs font-bold uppercase tracking-widest
+                transition-all duration-300
+                hover:bg-[#2D334A] hover:text-white
+              "
+            >
+              Login
+            </button>
+          </Link>
+          <Link to="/solve4purpose">
+            <button
+              className="
+                hidden lg:block
+                bg-[#FF4D4D]
+                text-white
+                font-bold
+                px-8 py-3
+                rounded-xl
+                transition-all
+                duration-300
+                shadow-md
+                hover:shadow-[6px_6px_0px_#1E293B]
+                hover:-translate-x-1
+                hover:-translate-y-1
+                active:translate-x-0
+                active:translate-y-0
+                active:shadow-md
+              "
+            >
+              SOLVE 4 PURPOSE
+            </button>
+          </Link>
 
 
 
@@ -122,6 +138,22 @@ export const Navbar = () => {
             </NavLink>
           ))}
 
+          <Link to="/workplace/login" onClick={() => setIsOpen(false)} className="mt-2 inline-block">
+            <button
+              type="button"
+              className="
+                w-full px-8 py-3
+                text-sm font-bold
+                rounded-xl
+                border-2 border-[#2D334A]
+                text-[#2D334A]
+                transition-all duration-300
+                hover:bg-[#2D334A] hover:text-white
+              "
+            >
+              Login
+            </button>
+          </Link>
           <Link
             to="/solve4purpose"
             onClick={() => setIsOpen(false)}
