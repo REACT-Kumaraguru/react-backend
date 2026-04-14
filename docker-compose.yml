@@ -21,13 +21,13 @@ services:
   api:
     build: ./backend
     container_name: react-api
+    env_file:
+      - path: ./backend/.env
+        required: false
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-reactwork}:${POSTGRES_PASSWORD:-reactwork}@db:5432/${POSTGRES_DB:-reactworkplace}
-      ADMIN_EMAIL: brathikan@kct.ac.in
-      ADMIN_PASSWORD: react@2026
-      SESSION_SECRET: react-secret-id
-      SESSION_COOKIE_SECURE: "true"
       TRUST_PROXY: "1"
+      SESSION_COOKIE_SECURE: "true"
       CORS_ORIGIN: https://react.kct.ac.in
       PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
     depends_on:
