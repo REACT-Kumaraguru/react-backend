@@ -367,7 +367,15 @@ function finishLoginSession(req, res, payload) {
       req.session.userId = payload.userId;
       req.session.email = payload.email;
     }
-    return res.json({ ok: true, role: payload.role });
+    // Async stores (e.g. connect-pg-simple): ensure session is persisted before
+    // the response is sent so Set-Cookie is not skipped or raced.
+    req.session.save((saveErr) => {
+      if (saveErr) {
+        console.error(saveErr);
+        return res.status(500).json({ error: 'Session error' });
+      }
+      return res.json({ ok: true, role: payload.role });
+    });
   });
 }
 
