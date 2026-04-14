@@ -22,6 +22,20 @@ const app = express();
 if (process.env.TRUST_PROXY === '1') {
   app.set('trust proxy', 1);
 }
+
+/** Set ACCESS_LOG=1 to print one line per request (method, URL, status, duration). */
+if (process.env.ACCESS_LOG === '1') {
+  app.use((req, res, next) => {
+    const started = Date.now();
+    res.on('finish', () => {
+      console.log(
+        `${req.method} ${req.originalUrl || req.url} ${res.statusCode} ${Date.now() - started}ms`,
+      );
+    });
+    next();
+  });
+}
+
 const PORT = Number(process.env.PORT) || 4000;
 const SESSION_SECRET =
   process.env.SESSION_SECRET || process.env.JWT_SECRET || 'dev-secret-change-in-production';
