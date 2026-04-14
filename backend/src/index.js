@@ -28,8 +28,9 @@ if (process.env.ACCESS_LOG === '1') {
   app.use((req, res, next) => {
     const started = Date.now();
     res.on('finish', () => {
+      const sidCookie = req.headers.cookie?.includes('rw.sid=') ? 'yes' : 'no';
       console.log(
-        `${req.method} ${req.originalUrl || req.url} ${res.statusCode} ${Date.now() - started}ms`,
+        `${req.method} ${req.originalUrl || req.url} ${res.statusCode} ${Date.now() - started}ms rw.sidCookie=${sidCookie}`,
       );
     });
     next();
