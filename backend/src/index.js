@@ -6,6 +6,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import bcrypt from 'bcryptjs';
 import { pool } from './db.js';
 import { runMigrations } from './migrate.js';
@@ -55,12 +56,19 @@ app.use(
   }),
 );
 app.use(express.json({ limit: '12mb' }));
+
+const PgSessionStore = connectPgSimple(session);
 app.use(
   session({
+    store: new PgSessionStore({
+      pool,
+      createTableIfMissing: true,
+    }),
     name: 'rw.sid',
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: process.env.TRUST_PROXY === '1',
     cookie: {
       httpOnly: true,
       secure: sessionCookieSecure,
