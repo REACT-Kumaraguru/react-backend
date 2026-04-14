@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
+import onHeaders from 'on-headers';
 import bcrypt from 'bcryptjs';
 import { pool } from './db.js';
 import { runMigrations } from './migrate.js';
@@ -388,6 +389,17 @@ function finishLoginSession(req, res, payload) {
       if (saveErr) {
         console.error(saveErr);
         return res.status(500).json({ error: 'Session error' });
+      }
+      // Avoid any intermediary caching a “successful” login body without Set-Cookie.
+      res.setHeader('Cache-Control', 'no-store, private');
+      if (process.env.ACCESS_LOG === '1') {
+        onHeaders(res, () => {
+          const sc = res.getHeader('Set-Cookie');
+          const present = Boolean(
+            sc && (Array.isArray(sc) ? sc.some(Boolean) : String(sc).length > 0),
+          );
+          console.log(`POST /api/auth/login Set-Cookie=${present ? 'present' : 'MISSING'}`);
+        });
       }
       return res.json({ ok: true, role: payload.role });
     });
