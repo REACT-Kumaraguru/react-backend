@@ -45,8 +45,14 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'react@kct.ac.in';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'react@2026';
 const BCRYPT_ROUNDS = 10;
 
-/** Only true when serving over HTTPS; must be false for http:// (e.g. local Docker). */
-const sessionCookieSecure = process.env.SESSION_COOKIE_SECURE === 'true';
+/**
+ * When SESSION_COOKIE_SECURE=true, use 'auto' so the Secure flag matches TLS as Express sees it
+ * (via X-Forwarded-Proto + trust proxy). A plain `true` with a wrong proto makes express-session
+ * skip Set-Cookie entirely (browser would never get rw.sid).
+ * When false, allow cookies on http:// (e.g. local dev without TLS).
+ */
+const sessionCookieSecure =
+  process.env.SESSION_COOKIE_SECURE === 'true' ? 'auto' : false;
 
 const defaultCorsOrigins = [
   'http://localhost:5173',
