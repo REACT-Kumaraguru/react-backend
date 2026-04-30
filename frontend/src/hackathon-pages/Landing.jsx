@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin } from 'lucide-react';
-import Roadmap from './components/Roadmap';
-import Atkct from './components/Atkct';
-import ProblemStatements from './components/ProblemStatements';
+
 
 const blockVariants = {
   hidden: { opacity: 0, x: -50 },
@@ -33,7 +31,7 @@ function Block({ children, delay = 0, className = "" }) {
 }
 
 export default function HackathonLanding() {
-  const [toggleOn, setToggleOn] = useState(true);
+  const [toggleOn, setToggleOn] = useState(false);
 
   return (
     <main className="relative bg-[#f8f9fa] font-sans pt-20 md:pt-24">
@@ -122,7 +120,7 @@ export default function HackathonLanding() {
         </div>
 
         {/* Right Side: Typography & CTA */}
-        <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-1/2">
           <motion.h1 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -143,28 +141,155 @@ export default function HackathonLanding() {
             M-Gate, Kumaraguru College of Technology (KCT)
           </p>
           
-          <p className="max-w-md text-slate-600 leading-relaxed mb-10">
-            Solve 4 Purpose is an innovation-driven Ideathon designed to encourage students to create meaningful solutions for real-world problems. The event challenges participants to think beyond ideas and focus on purpose-driven impact.
-          </p>
-
-          <Link to="/solve4purpose/register">
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block px-10 py-4 bg-[#ff4d4d] text-white font-black uppercase tracking-widest text-lg 
-                         border-[3px] border-slate-900 shadow-[6px_6px_0_0_#1e293b] 
-                         hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+          {!toggleOn ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center lg:items-start mt-6 w-full"
             >
-              Register
-            </motion.span>
-          </Link>
+              <div className="bg-[#ff4d4d] border-[4px] border-slate-900 shadow-[8px_8px_0_0_#1e293b] p-6 mb-6 w-full max-w-md transform rotate-[-2deg] hover:rotate-0 transition-transform">
+                <h3 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
+                  The Winners Are Announced!
+                </h3>
+                <p className="text-white font-bold text-lg leading-relaxed bg-slate-900/10 p-3 border-2 border-transparent">
+                  The event has successfully concluded. Click the toggle switch on the left to reveal the champions.
+                </p>
+              </div>
+              <motion.div 
+                animate={{ x: [-5, 5, -5] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="text-[#ff4d4d] font-black text-2xl flex items-center gap-3 uppercase tracking-widest drop-shadow-sm bg-white border-[3px] border-slate-900 px-4 py-2 shadow-[4px_4px_0_0_#1e293b]"
+              >
+                 <span className="text-4xl">👈</span> Toggle to View
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.6, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+              className="relative w-full h-[650px] flex flex-col justify-center items-center lg:items-start mt-4"
+            >
+              {/* 3rd Place */}
+              <motion.div
+                initial={{ y: 0, rotate: 0, scale: 0.9 }}
+                animate={{ y: 220, rotate: 3, scale: 1 }}
+                transition={{ delay: 0.4, type: "spring", stiffness: 100, damping: 14 }}
+                className="absolute lg:left-8 bg-gradient-to-br from-orange-300 via-orange-400 to-red-400 rounded-3xl p-1 w-full max-w-sm z-10 shadow-[0_20px_50px_rgba(234,88,12,0.3)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
+              >
+                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/40">
+                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥉</div>
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-orange-900 uppercase shadow-sm">
+                      3rd Place
+                    </span>
+                  </div>
+
+                  <h3 className="text-3xl font-extrabold text-white drop-shadow-md mb-5 tracking-tight">
+                    Fuel Your Mind
+                  </h3>
+                  
+                  <div className="space-y-2 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/30 shadow-inner">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
+                      <p className="text-orange-950 font-bold text-sm">25BAU016 – Neethishkumar S</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
+                      <p className="text-orange-950 font-bold text-sm">25BEE074 – Neha Sakthivel</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* 2nd Place */}
+              <motion.div
+                initial={{ y: 0, rotate: 0, scale: 0.95 }}
+                animate={{ y: 10, rotate: -3, scale: 1 }}
+                transition={{ delay: 0.55, type: "spring", stiffness: 100, damping: 14 }}
+                className="absolute lg:left-4 bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 rounded-3xl p-1 w-full max-w-sm z-20 shadow-[0_20px_50px_rgba(148,163,184,0.4)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
+              >
+                <div className="bg-white/40 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/60">
+                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥈</div>
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-white/60 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-slate-700 uppercase shadow-sm">
+                      2nd Place
+                    </span>
+                  </div>
+
+                  <h3 className="text-3xl font-extrabold text-slate-800 drop-shadow-sm mb-5 tracking-tight">
+                    Sortify
+                  </h3>
+                  
+                  <div className="space-y-2 bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-inner">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">RP</div>
+                      <p className="text-slate-900 font-bold text-sm">25BCS286 – Rajamanisha P</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">PS</div>
+                      <p className="text-slate-900 font-bold text-sm">25BCS263 – Pranavadharshini S</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SW</div>
+                      <p className="text-slate-900 font-bold text-sm">25BEE128 – Swathi</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SD</div>
+                      <p className="text-slate-900 font-bold text-sm">25BEE113 – Sharu Dharshini</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* 1st Place */}
+              <motion.div
+                initial={{ y: 0, rotate: 0, scale: 1 }}
+                animate={{ y: -200, rotate: 2, scale: 1.05 }}
+                transition={{ delay: 0.7, type: "spring", stiffness: 100, damping: 14 }}
+                className="absolute lg:left-0 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-500 rounded-3xl p-1 w-full max-w-sm z-30 shadow-[0_20px_50px_rgba(245,158,11,0.5)] hover:z-50 hover:scale-110 transition-all duration-300 group cursor-default"
+              >
+                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/50 relative overflow-hidden">
+                  {/* Subtle shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 transform -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+                  <motion.div 
+                    animate={{ y: [-5, 5, -5] }}
+                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                    className="absolute -top-8 -right-6 text-7xl drop-shadow-2xl"
+                  >
+                    🏆
+                  </motion.div>
+                  
+                  <div className="flex items-center gap-2 mb-3 relative z-10">
+                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-amber-900 uppercase shadow-sm flex items-center gap-1">
+                      <span className="text-red-600">★</span> 1st Place <span className="text-red-600">★</span>
+                    </span>
+                  </div>
+
+                  <h3 className="text-4xl font-extrabold text-white drop-shadow-lg mb-5 tracking-tight relative z-10">
+                    Soluscout
+                  </h3>
+                  
+                  <div className="space-y-3 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-inner relative z-10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">MA</div>
+                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE015 – M. Asma Kousar</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">SD</div>
+                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE055 – Sidharthani D</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
       </section>
-
-      <Roadmap />
-      <Atkct />
-      <ProblemStatements />
     </main>
   );
 }
