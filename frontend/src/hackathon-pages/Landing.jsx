@@ -175,30 +175,30 @@ export default function HackathonLanding() {
                 initial={{ y: 0, rotate: 0, scale: 0.9 }}
                 animate={{ y: 220, rotate: 3, scale: 1 }}
                 transition={{ delay: 0.4, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-8 bg-gradient-to-br from-orange-300 via-orange-400 to-red-400 rounded-3xl p-1 w-full max-w-sm z-10 shadow-[0_20px_50px_rgba(234,88,12,0.3)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
+                className="absolute lg:left-8 bg-[#FF9800] border-[4px] border-slate-900 shadow-[10px_10px_0_0_#1e293b] p-6 w-full max-w-sm z-10 hover:z-50 hover:scale-105 transition-all duration-300 cursor-default"
               >
-                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/40">
-                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥉</div>
-                  
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-orange-900 uppercase shadow-sm">
-                      3rd Place
-                    </span>
-                  </div>
+                <div className="absolute -top-6 -right-4 text-6xl drop-shadow-[0_4px_0_rgba(30,41,59,1)] hover:scale-110 transition-transform">
+                  🥉
+                </div>
+                
+                <div className="flex items-center mb-5">
+                  <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-4 py-1.5 font-black tracking-widest text-slate-900 uppercase text-xs">
+                    3rd Place
+                  </span>
+                </div>
 
-                  <h3 className="text-3xl font-extrabold text-white drop-shadow-md mb-5 tracking-tight">
-                    Fuel Your Mind
-                  </h3>
-                  
-                  <div className="space-y-2 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/30 shadow-inner">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
-                      <p className="text-orange-950 font-bold text-sm">25BAU016 – Neethishkumar S</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
-                      <p className="text-orange-950 font-bold text-sm">25BEE074 – Neha Sakthivel</p>
-                    </div>
+                <h3 className="text-3xl font-black text-slate-900 mb-6 tracking-tight uppercase">
+                  Fuel Your Mind
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-8 h-8 bg-orange-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">NS</div>
+                    <p className="text-slate-900 font-bold text-sm">25BAU016 – Neethishkumar S</p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-8 h-8 bg-orange-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">NS</div>
+                    <p className="text-slate-900 font-bold text-sm">25BEE074 – Neha Sakthivel</p>
                   </div>
                 </div>
               </motion.div>
@@ -208,38 +208,38 @@ export default function HackathonLanding() {
                 initial={{ y: 0, rotate: 0, scale: 0.95 }}
                 animate={{ y: 10, rotate: -3, scale: 1 }}
                 transition={{ delay: 0.55, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-4 bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 rounded-3xl p-1 w-full max-w-sm z-20 shadow-[0_20px_50px_rgba(148,163,184,0.4)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
+                className="absolute lg:left-4 bg-[#E2E8F0] border-[4px] border-slate-900 shadow-[10px_10px_0_0_#1e293b] p-6 w-full max-w-sm z-20 hover:z-50 hover:scale-105 transition-all duration-300 cursor-default"
               >
-                <div className="bg-white/40 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/60">
-                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥈</div>
-                  
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-white/60 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-slate-700 uppercase shadow-sm">
-                      2nd Place
-                    </span>
-                  </div>
+                <div className="absolute -top-6 -right-4 text-6xl drop-shadow-[0_4px_0_rgba(30,41,59,1)] hover:scale-110 transition-transform">
+                  🥈
+                </div>
+                
+                <div className="flex items-center mb-5">
+                  <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-4 py-1.5 font-black tracking-widest text-slate-900 uppercase text-xs">
+                    2nd Place
+                  </span>
+                </div>
 
-                  <h3 className="text-3xl font-extrabold text-slate-800 drop-shadow-sm mb-5 tracking-tight">
-                    Sortify
-                  </h3>
-                  
-                  <div className="space-y-2 bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-inner">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">RP</div>
-                      <p className="text-slate-900 font-bold text-sm">25BCS286 – Rajamanisha P</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">PS</div>
-                      <p className="text-slate-900 font-bold text-sm">25BCS263 – Pranavadharshini S</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SW</div>
-                      <p className="text-slate-900 font-bold text-sm">25BEE128 – Swathi</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SD</div>
-                      <p className="text-slate-900 font-bold text-sm">25BEE113 – Sharu Dharshini</p>
-                    </div>
+                <h3 className="text-3xl font-black text-slate-900 mb-6 tracking-tight uppercase">
+                  Sortify
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">RP</div>
+                    <p className="text-slate-900 font-bold text-sm">25BCS286 – Rajamanisha P</p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">PS</div>
+                    <p className="text-slate-900 font-bold text-sm">25BCS263 – Pranavadharshini S</p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">SW</div>
+                    <p className="text-slate-900 font-bold text-sm">25BEE128 – Swathi</p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">SD</div>
+                    <p className="text-slate-900 font-bold text-sm">25BEE113 – Sharu Dharshini</p>
                   </div>
                 </div>
               </motion.div>
@@ -249,39 +249,34 @@ export default function HackathonLanding() {
                 initial={{ y: 0, rotate: 0, scale: 1 }}
                 animate={{ y: -200, rotate: 2, scale: 1.05 }}
                 transition={{ delay: 0.7, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-0 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-500 rounded-3xl p-1 w-full max-w-sm z-30 shadow-[0_20px_50px_rgba(245,158,11,0.5)] hover:z-50 hover:scale-110 transition-all duration-300 group cursor-default"
+                className="absolute lg:left-0 bg-[#FDE047] border-[4px] border-slate-900 shadow-[12px_12px_0_0_#1e293b] p-7 w-full max-w-sm z-30 hover:z-50 hover:scale-110 transition-all duration-300 cursor-default"
               >
-                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/50 relative overflow-hidden">
-                  {/* Subtle shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 transform -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                <motion.div 
+                  animate={{ y: [-5, 5, -5] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                  className="absolute -top-8 -right-6 text-7xl drop-shadow-[0_4px_0_rgba(30,41,59,1)]"
+                >
+                  🏆
+                </motion.div>
+                
+                <div className="flex items-center mb-5">
+                  <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-4 py-1.5 font-black tracking-widest text-slate-900 uppercase text-sm flex items-center gap-2">
+                    <span className="text-red-500 text-lg">★</span> 1st Place <span className="text-red-500 text-lg">★</span>
+                  </span>
+                </div>
 
-                  <motion.div 
-                    animate={{ y: [-5, 5, -5] }}
-                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                    className="absolute -top-8 -right-6 text-7xl drop-shadow-2xl"
-                  >
-                    🏆
-                  </motion.div>
-                  
-                  <div className="flex items-center gap-2 mb-3 relative z-10">
-                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-amber-900 uppercase shadow-sm flex items-center gap-1">
-                      <span className="text-red-600">★</span> 1st Place <span className="text-red-600">★</span>
-                    </span>
+                <h3 className="text-4xl font-black text-slate-900 mb-7 tracking-tight uppercase border-b-4 border-slate-900 pb-2">
+                  Soluscout
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 bg-white border-[3px] border-slate-900 p-3 shadow-[5px_5px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-10 h-10 bg-amber-400 border-[3px] border-slate-900 flex items-center justify-center text-slate-900 font-black text-sm shrink-0">MA</div>
+                    <p className="text-slate-900 font-bold text-sm md:text-base">25BAE015 – M. Asma Kousar</p>
                   </div>
-
-                  <h3 className="text-4xl font-extrabold text-white drop-shadow-lg mb-5 tracking-tight relative z-10">
-                    Soluscout
-                  </h3>
-                  
-                  <div className="space-y-3 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-inner relative z-10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">MA</div>
-                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE015 – M. Asma Kousar</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">SD</div>
-                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE055 – Sidharthani D</p>
-                    </div>
+                  <div className="flex items-center gap-4 bg-white border-[3px] border-slate-900 p-3 shadow-[5px_5px_0_0_#1e293b] transform transition-transform hover:-translate-y-1">
+                    <div className="w-10 h-10 bg-amber-400 border-[3px] border-slate-900 flex items-center justify-center text-slate-900 font-black text-sm shrink-0">SD</div>
+                    <p className="text-slate-900 font-bold text-sm md:text-base">25BAE055 – Sidharthani D</p>
                   </div>
                 </div>
               </motion.div>
