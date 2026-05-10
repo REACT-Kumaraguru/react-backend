@@ -32,6 +32,12 @@ function Block({ children, delay = 0, className = "" }) {
 
 export default function HackathonLanding() {
   const [toggleOn, setToggleOn] = useState(false);
+  const [cardsRevealed, setCardsRevealed] = useState(false);
+
+  // Reset cards when toggle is turned off
+  if (!toggleOn && cardsRevealed) {
+    setCardsRevealed(false);
+  }
 
   return (
     <main className="relative bg-[#f8f9fa] font-sans pt-20 md:pt-24">
@@ -121,25 +127,29 @@ export default function HackathonLanding() {
 
         {/* Right Side: Typography & CTA */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-1/2">
-          <motion.h1 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-4xl md:text-6xl font-light text-slate-900 mb-2"
-          >
-            <span className="font-bold underline decoration-red-500">Ideathon</span> 2026
-          </motion.h1>
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-2xl md:text-3xl font-bold text-slate-700 mb-6"
-          >
-            April 15 – April 17, 2026
-          </motion.h2>
-          
-          <p className="text-slate-500 font-medium mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 shrink-0 text-slate-600" aria-hidden />
-            M-Gate, Kumaraguru College of Technology (KCT)
-          </p>
+          {!toggleOn && (
+            <>
+              <motion.h1 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-4xl md:text-6xl font-light text-slate-900 mb-2"
+              >
+                <span className="font-bold underline decoration-red-500">Ideathon</span> 2026
+              </motion.h1>
+              <motion.h2 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-2xl md:text-3xl font-bold text-slate-700 mb-6"
+              >
+                April 15 – April 17, 2026
+              </motion.h2>
+              
+              <p className="text-slate-500 font-medium mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 shrink-0 text-slate-600" aria-hidden />
+                M-Gate, Kumaraguru College of Technology (KCT)
+              </p>
+            </>
+          )}
           
           {!toggleOn ? (
             <motion.div 
@@ -147,7 +157,7 @@ export default function HackathonLanding() {
               animate={{ opacity: 1 }}
               className="flex flex-col items-center lg:items-start mt-6 w-full"
             >
-              <div className="bg-[#ff4d4d] border-[4px] border-slate-900 shadow-[8px_8px_0_0_#1e293b] p-6 mb-6 w-full max-w-md transform rotate-[-2deg] hover:rotate-0 transition-transform">
+              <div className="bg-[#ff4d4d] border-[4px] border-slate-900 shadow-[8px_8px_0_0_#1e293b] p-6 mb-6 w-full max-md transform rotate-[-2deg] hover:rotate-0 transition-transform">
                 <h3 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
                   The Winners Are Announced!
                 </h3>
@@ -165,126 +175,148 @@ export default function HackathonLanding() {
             </motion.div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.6, rotate: -5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-              className="relative w-full h-[650px] flex flex-col justify-center items-center lg:items-start mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full flex flex-col items-center lg:items-start mt-2 pb-16"
             >
-              {/* 3rd Place */}
-              <motion.div
-                initial={{ y: 0, rotate: 0, scale: 0.9 }}
-                animate={{ y: 220, rotate: 3, scale: 1 }}
-                transition={{ delay: 0.4, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-8 bg-gradient-to-br from-orange-300 via-orange-400 to-red-400 rounded-3xl p-1 w-full max-w-sm z-10 shadow-[0_20px_50px_rgba(234,88,12,0.3)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
+              <div 
+                className="relative w-full h-[800px] flex items-center justify-center cursor-default"
+                onMouseEnter={() => setCardsRevealed(true)}
               >
-                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/40">
-                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥉</div>
+                {!cardsRevealed && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute z-50 -top-4 bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-6 py-2 font-black tracking-widest text-slate-900 uppercase text-sm animate-bounce"
+                  >
+                    Hover over the stack to reveal!
+                  </motion.div>
+                )}
+
+                {/* 3rd Place */}
+                <motion.div
+                  animate={
+                    cardsRevealed 
+                      ? { y: 280, x: -30, rotate: -2, scale: 1 } 
+                      : { y: 0, x: 0, rotate: -6, scale: 0.95 }
+                  }
+                  whileHover={cardsRevealed ? { scale: 1.05, y: 200 } : {}}
+                  transition={{ type: "spring", stiffness: 250, damping: 18 }}
+                  className="absolute bg-[#FF9800] border-[4px] border-slate-900 shadow-[10px_10px_0_0_#1e293b] p-5 w-full max-w-[340px] z-10 hover:z-50 transition-all duration-300"
+                >
+                  <div className="absolute -top-5 -right-4 text-5xl drop-shadow-[0_4px_0_rgba(30,41,59,1)]">
+                    🥉
+                  </div>
                   
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-orange-900 uppercase shadow-sm">
+                  <div className="flex items-center mb-4">
+                    <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-3 py-1 font-black tracking-widest text-slate-900 uppercase text-[10px]">
                       3rd Place
                     </span>
                   </div>
 
-                  <h3 className="text-3xl font-extrabold text-white drop-shadow-md mb-5 tracking-tight">
+                  <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight uppercase">
                     Fuel Your Mind
                   </h3>
                   
-                  <div className="space-y-2 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/30 shadow-inner">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
-                      <p className="text-orange-950 font-bold text-sm">25BAU016 – Neethishkumar S</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-orange-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">NS</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BAU016 – Neethishkumar S</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-orange-500/60 flex items-center justify-center text-white text-xs font-bold shrink-0">NS</div>
-                      <p className="text-orange-950 font-bold text-sm">25BEE074 – Neha Sakthivel</p>
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-orange-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">NS</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BEE074 – Neha Sakthivel</p>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              {/* 2nd Place */}
-              <motion.div
-                initial={{ y: 0, rotate: 0, scale: 0.95 }}
-                animate={{ y: 10, rotate: -3, scale: 1 }}
-                transition={{ delay: 0.55, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-4 bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 rounded-3xl p-1 w-full max-w-sm z-20 shadow-[0_20px_50px_rgba(148,163,184,0.4)] hover:z-50 hover:scale-105 transition-all duration-300 group cursor-default"
-              >
-                <div className="bg-white/40 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/60">
-                  <div className="absolute -top-6 -right-4 text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform">🥈</div>
+                {/* 2nd Place */}
+                <motion.div
+                  animate={
+                    cardsRevealed 
+                      ? { y: 0, x: 50, rotate: 2, scale: 1 } 
+                      : { y: 0, x: 0, rotate: 4, scale: 0.98 }
+                  }
+                  whileHover={cardsRevealed ? { scale: 1.05, y: -20 } : {}}
+                  transition={{ type: "spring", stiffness: 250, damping: 18 }}
+                  className="absolute bg-[#E2E8F0] border-[4px] border-slate-900 shadow-[10px_10px_0_0_#1e293b] p-5 w-full max-w-[340px] z-20 hover:z-50 transition-all duration-300"
+                >
+                  <div className="absolute -top-5 -right-4 text-5xl drop-shadow-[0_4px_0_rgba(30,41,59,1)]">
+                    🥈
+                  </div>
                   
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-white/60 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-slate-700 uppercase shadow-sm">
+                  <div className="flex items-center mb-4">
+                    <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-3 py-1 font-black tracking-widest text-slate-900 uppercase text-[10px]">
                       2nd Place
                     </span>
                   </div>
 
-                  <h3 className="text-3xl font-extrabold text-slate-800 drop-shadow-sm mb-5 tracking-tight">
+                  <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight uppercase">
                     Sortify
                   </h3>
                   
-                  <div className="space-y-2 bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/50 shadow-inner">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">RP</div>
-                      <p className="text-slate-900 font-bold text-sm">25BCS286 – Rajamanisha P</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">RP</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BCS286 – Rajamanisha P</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">PS</div>
-                      <p className="text-slate-900 font-bold text-sm">25BCS263 – Pranavadharshini S</p>
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">PS</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BCS263 – Pranavadharshini S</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SW</div>
-                      <p className="text-slate-900 font-bold text-sm">25BEE128 – Swathi</p>
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">SW</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BEE128 – Swathi</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-slate-400/60 flex items-center justify-center text-slate-800 text-xs font-bold shrink-0">SD</div>
-                      <p className="text-slate-900 font-bold text-sm">25BEE113 – Sharu Dharshini</p>
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2 shadow-[3px_3px_0_0_#1e293b]">
+                      <div className="w-7 h-7 bg-slate-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">SD</div>
+                      <p className="text-slate-900 font-bold text-xs sm:text-sm">25BEE113 – Sharu Dharshini</p>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              {/* 1st Place */}
-              <motion.div
-                initial={{ y: 0, rotate: 0, scale: 1 }}
-                animate={{ y: -200, rotate: 2, scale: 1.05 }}
-                transition={{ delay: 0.7, type: "spring", stiffness: 100, damping: 14 }}
-                className="absolute lg:left-0 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-500 rounded-3xl p-1 w-full max-w-sm z-30 shadow-[0_20px_50px_rgba(245,158,11,0.5)] hover:z-50 hover:scale-110 transition-all duration-300 group cursor-default"
-              >
-                <div className="bg-white/20 backdrop-blur-md rounded-[22px] p-6 h-full border border-white/50 relative overflow-hidden">
-                  {/* Subtle shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 transform -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-
+                {/* 1st Place */}
+                <motion.div
+                  animate={
+                    cardsRevealed 
+                      ? { y: -280, x: -40, rotate: -3, scale: 1 } 
+                      : { y: 0, x: 0, rotate: 0, scale: 1 }
+                  }
+                  whileHover={cardsRevealed ? { scale: 1.05, y: -300 } : {}}
+                  transition={{ type: "spring", stiffness: 250, damping: 18 }}
+                  className={`absolute bg-[#FDE047] border-[4px] border-slate-900 shadow-[10px_10px_0_0_#1e293b] p-6 w-full max-w-[350px] z-30 hover:z-50 transition-all duration-300 ${!cardsRevealed ? 'group-hover:-translate-y-2 group-hover:rotate-1' : ''}`}
+                >
                   <motion.div 
-                    animate={{ y: [-5, 5, -5] }}
+                    animate={{ y: [-3, 3, -3] }}
                     transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                    className="absolute -top-8 -right-6 text-7xl drop-shadow-2xl"
+                    className="absolute -top-6 -right-5 text-6xl drop-shadow-[0_4px_0_rgba(30,41,59,1)]"
                   >
                     🏆
                   </motion.div>
                   
-                  <div className="flex items-center gap-2 mb-3 relative z-10">
-                    <span className="bg-white/40 px-3 py-1 rounded-full text-xs font-bold tracking-widest text-amber-900 uppercase shadow-sm flex items-center gap-1">
-                      <span className="text-red-600">★</span> 1st Place <span className="text-red-600">★</span>
+                  <div className="flex items-center mb-4">
+                    <span className="bg-white border-[3px] border-slate-900 shadow-[4px_4px_0_0_#1e293b] px-3 py-1 font-black tracking-widest text-slate-900 uppercase text-xs flex items-center gap-2">
+                      <span className="text-red-500 text-sm">★</span> 1st Place <span className="text-red-500 text-sm">★</span>
                     </span>
                   </div>
 
-                  <h3 className="text-4xl font-extrabold text-white drop-shadow-lg mb-5 tracking-tight relative z-10">
+                  <h3 className="text-3xl font-black text-slate-900 mb-5 tracking-tight uppercase border-b-4 border-slate-900 pb-2">
                     Soluscout
                   </h3>
                   
-                  <div className="space-y-3 bg-white/40 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-inner relative z-10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">MA</div>
-                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE015 – M. Asma Kousar</p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b]">
+                      <div className="w-8 h-8 bg-amber-400 border-[3px] border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">MA</div>
+                      <p className="text-slate-900 font-bold text-sm">25BAE015 – M. Asma Kousar</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/60 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">SD</div>
-                      <p className="text-amber-950 font-bold text-sm md:text-base">25BAE055 – Sidharthani D</p>
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-slate-900 p-2.5 shadow-[4px_4px_0_0_#1e293b]">
+                      <div className="w-8 h-8 bg-amber-400 border-[3px] border-slate-900 flex items-center justify-center text-slate-900 font-black text-xs shrink-0">SD</div>
+                      <p className="text-slate-900 font-bold text-sm">25BAE055 – Sidharthani D</p>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </motion.div>
           )}
         </div>

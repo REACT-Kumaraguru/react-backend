@@ -167,7 +167,7 @@ app.get('/api/auth/me', async (req, res) => {
   if (uid) {
     try {
       const { rows } = await pool.query(
-        `SELECT a.id, a.email, a.name, a.phone, a.degree, a.grad_year, a.branch, a.dob, a.profile_pic_path, a.created_at,
+        `SELECT a.id, a.email, a.name, a.phone, a.degree, a.grad_year, a.branch, a.dob, a.gender, a.register_number, a.profile_pic_path, a.created_at,
                 wr.name AS workplace_role_name, COALESCE(a.is_active, true) AS is_active
          FROM applications a
          LEFT JOIN workplace_roles wr ON wr.id = a.workplace_role_id
@@ -188,6 +188,8 @@ app.get('/api/auth/me', async (req, res) => {
           grad_year: r.grad_year,
           branch: r.branch,
           dob: r.dob,
+          gender: r.gender,
+          register_number: r.register_number,
           profile_pic_path: r.profile_pic_path,
           member_since: r.created_at,
           workplace_role_name: r.workplace_role_name || null,
@@ -199,6 +201,99 @@ app.get('/api/auth/me', async (req, res) => {
     }
   }
   return res.status(401).json({ error: 'Unauthorized' });
+});
+
+app.patch('/api/auth/me', async (req, res) => {
+  const uid = req.session?.userId;
+  if (!uid) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const { name, phone, degree, gradYear, branch, dob, gender, registerNumber, workplaceRoleId } = req.body || {};
+  try {
+    // 1. Fetch current data
+    const cur = await pool.query(
+      `SELECT name, phone, degree, grad_year, branch, dob, gender, register_number, workplace_role_id
+       FROM applications WHERE id = $1 AND status = 'APPROVED'`,
+      [uid]
+    );
+    if (!cur.rows.length) return res.status(404).json({ error: 'Not found' });
+
+    const oldData = {
+      name: cur.rows[0].name,
+      phone: cur.rows[0].phone,
+      degree: cur.rows[0].degree,
+      gradYear: cur.rows[0].grad_year,
+      branch: cur.rows[0].branch,
+      dob: cur.rows[0].dob ? new Date(cur.rows[0].dob).toISOString().split('T')[0] : null,
+      gender: cur.rows[0].gender,
+      registerNumber: cur.rows[0].register_number,
+      workplaceRoleId: cur.rows[0].workplace_role_id,
+    };
+
+    const newData = {
+      name: name?.trim() || oldData.name,
+      phone: phone?.trim() || oldData.phone,
+      degree: degree?.trim() || oldData.degree,
+      gradYear: gradYear ? parseInt(gradYear, 10) : oldData.gradYear,
+      branch: branch?.trim() || oldData.branch,
+      dob: dob || oldData.dob,
+      gender: gender?.trim() || oldData.gender,
+      registerNumber: registerNumber?.trim() || oldData.registerNumber,
+      workplaceRoleId: workplaceRoleId ? parseInt(workplaceRoleId, 10) : oldData.workplaceRoleId,
+    };
+
+    // 2. Check for differences
+    const diff = {};
+    let hasChanges = false;
+    for (const k in newData) {
+      if (newData[k] != oldData[k]) {
+        diff[k] = newData[k];
+        hasChanges = true;
+      }
+    }
+
+    if (!hasChanges) {
+      return res.json({ ok: true, message: 'No changes detected' });
+    }
+
+    // 3. Create request (replace previous pending if any)
+    await pool.query('DELETE FROM profile_update_requests WHERE application_id = $1 AND status = $2', [uid, 'PENDING']);
+    await pool.query(
+      `INSERT INTO profile_update_requests (application_id, old_data, new_data)
+       VALUES ($1, $2, $3)`,
+      [uid, oldData, newData]
+    );
+
+    return res.json({ ok: true, message: 'Change request sent to admin for approval' });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Could not submit change request' });
+  }
+});
+
+app.post('/api/auth/me/profile-pic', upload.single('profilePic'), async (req, res) => {
+  const uid = req.session?.userId;
+  if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  const picPath = `/uploads/${req.file.filename}`;
+  try {
+    const cur = await pool.query(`SELECT profile_pic_path FROM applications WHERE id = $1`, [uid]);
+    const oldPic = cur.rows[0]?.profile_pic_path;
+
+    await pool.query(`UPDATE applications SET profile_pic_path = $1 WHERE id = $2`, [picPath, uid]);
+
+    if (oldPic && typeof oldPic === 'string') {
+      const full = path.join(uploadsDir, path.basename(oldPic));
+      if (full.startsWith(uploadsDir)) {
+        try { fs.unlinkSync(full); } catch { /* ignore */ }
+      }
+    }
+    return res.json({ ok: true, profile_pic_path: picPath });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Could not update profile picture' });
+  }
 });
 
 /** Public list for registration form (scrollable select on the client). */
@@ -478,7 +573,7 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.post('/api/applications', upload.single('profilePic'), async (req, res) => {
   try {
-    const { name, email, phone, degree, gradYear, branch, dob, workplaceRoleId } = req.body || {};
+    const { name, email, phone, degree, gradYear, branch, dob, gender, registerNumber, workplaceRoleId } = req.body || {};
     if (!name?.trim() || !email?.trim()) {
       return res.status(400).json({ error: 'Name and email are required' });
     }
@@ -507,8 +602,8 @@ app.post('/api/applications', upload.single('profilePic'), async (req, res) => {
     const dobVal = dob?.trim() ? dob.trim() : null;
 
     const result = await pool.query(
-      `INSERT INTO applications (profile_pic_path, name, email, phone, degree, grad_year, branch, dob, workplace_role_id, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'PENDING')
+      `INSERT INTO applications (profile_pic_path, name, email, phone, degree, grad_year, branch, dob, gender, register_number, workplace_role_id, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'PENDING')
        RETURNING id, email`,
       [
         picPath,
@@ -519,6 +614,8 @@ app.post('/api/applications', upload.single('profilePic'), async (req, res) => {
         gradYear ? parseInt(gradYear, 10) : null,
         branch?.trim() || null,
         dobVal,
+        gender?.trim() || null,
+        registerNumber?.trim() || null,
         roleId,
       ],
     );
@@ -545,7 +642,7 @@ app.post('/api/applications', upload.single('profilePic'), async (req, res) => {
 app.get('/api/admin/applications', requireAdmin, async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT a.id, a.profile_pic_path, a.name, a.email, a.phone, a.degree, a.grad_year, a.branch, a.dob, a.status, a.decided_at, a.created_at,
+      `SELECT a.id, a.profile_pic_path, a.name, a.email, a.phone, a.degree, a.grad_year, a.branch, a.dob, a.gender, a.register_number, a.status, a.decided_at, a.created_at, a.workplace_role_id,
               wr.name AS workplace_role_name, COALESCE(a.is_active, true) AS is_active
        FROM applications a
        LEFT JOIN workplace_roles wr ON wr.id = a.workplace_role_id
@@ -669,6 +766,70 @@ app.patch('/api/admin/applications/:id/status', requireAdmin, async (req, res) =
   }
 });
 
+app.patch('/api/admin/applications/:id', requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' });
+  const { name, phone, degree, gradYear, branch, dob, gender, registerNumber, workplaceRoleId } = req.body || {};
+  try {
+    const { rowCount } = await pool.query(
+      `UPDATE applications
+       SET name = COALESCE($1, name),
+           phone = COALESCE($2, phone),
+           degree = COALESCE($3, degree),
+           grad_year = COALESCE($4, grad_year),
+           branch = COALESCE($5, branch),
+           dob = COALESCE($6, dob),
+           gender = COALESCE($7, gender),
+           register_number = COALESCE($8, register_number),
+           workplace_role_id = COALESCE($9, workplace_role_id)
+       WHERE id = $10`,
+      [
+        name?.trim() || null,
+        phone?.trim() || null,
+        degree?.trim() || null,
+        gradYear ? parseInt(gradYear, 10) : null,
+        branch?.trim() || null,
+        dob || null,
+        gender?.trim() || null,
+        registerNumber?.trim() || null,
+        workplaceRoleId ? parseInt(workplaceRoleId, 10) : null,
+        id,
+      ],
+    );
+    if (!rowCount) return res.status(404).json({ error: 'Not found' });
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Could not update application' });
+  }
+});
+
+app.post('/api/admin/applications/:id/profile-pic', requireAdmin, upload.single('profilePic'), async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' });
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  const picPath = `/uploads/${req.file.filename}`;
+  try {
+    const cur = await pool.query(`SELECT profile_pic_path FROM applications WHERE id = $1`, [id]);
+    if (!cur.rowCount) return res.status(404).json({ error: 'Not found' });
+    const oldPic = cur.rows[0].profile_pic_path;
+
+    await pool.query(`UPDATE applications SET profile_pic_path = $1 WHERE id = $2`, [picPath, id]);
+
+    if (oldPic && typeof oldPic === 'string') {
+      const full = path.join(uploadsDir, path.basename(oldPic));
+      if (full.startsWith(uploadsDir)) {
+        try { fs.unlinkSync(full); } catch { /* ignore */ }
+      }
+    }
+    return res.json({ ok: true, profile_pic_path: picPath });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Could not update profile picture' });
+  }
+});
+
 app.delete('/api/admin/applications/:id', requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' });
@@ -715,6 +876,72 @@ app.use((err, _req, res, _next) => {
   }
   console.error(err);
   return res.status(500).json({ error: 'Server error' });
+});
+app.get('/api/admin/profile-updates', requireAdmin, async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT p.*, a.name as student_name, a.email as student_email
+       FROM profile_update_requests p
+       JOIN applications a ON a.id = p.application_id
+       WHERE p.status = 'PENDING'
+       ORDER BY p.created_at DESC`
+    );
+    return res.json(rows);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Could not load profile updates' });
+  }
+});
+
+app.post('/api/admin/profile-updates/:id/decide', requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { action } = req.body || {}; // 'APPROVE' or 'REJECT'
+  if (!Number.isInteger(id) || !['APPROVE', 'REJECT'].includes(action)) {
+    return res.status(400).json({ error: 'Invalid request' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query(
+      `SELECT * FROM profile_update_requests WHERE id = $1 AND status = 'PENDING' FOR UPDATE`,
+      [id]
+    );
+    if (!rows.length) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    const reqData = rows[0];
+    const newStatus = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
+
+    await client.query(
+      `UPDATE profile_update_requests SET status = $1, decided_at = NOW() WHERE id = $2`,
+      [newStatus, id]
+    );
+
+    if (action === 'APPROVE') {
+      const nd = reqData.new_data;
+      await client.query(
+        `UPDATE applications
+         SET name = $1, phone = $2, degree = $3, grad_year = $4, branch = $5, dob = $6, gender = $7, register_number = $8, workplace_role_id = $9
+         WHERE id = $10`,
+        [
+          nd.name, nd.phone, nd.degree, nd.gradYear, nd.branch, nd.dob, nd.gender, nd.registerNumber, nd.workplaceRoleId,
+          reqData.application_id
+        ]
+      );
+    }
+
+    await client.query('COMMIT');
+    return res.json({ ok: true });
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error(e);
+    return res.status(500).json({ error: 'Action failed' });
+  } finally {
+    client.release();
+  }
 });
 
 (async () => {

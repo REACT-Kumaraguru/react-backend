@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { listWorkingDates, dayName } from '../../lib/odDateUtils';
 import {
@@ -8,6 +8,7 @@ import {
   submitOdForReview,
   fetchOdSubmission,
 } from '../../api/workplaceApi';
+import { buildOdLetterHtml } from '../../lib/odLetterPreview';
 
 const inputClass =
   'w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#2D334A] outline-none focus:border-[#3B82F6]';
@@ -38,6 +39,7 @@ export default function OdApplyPage() {
   const [weekHours, setWeekHours] = useState({});
   const [description1, setDescription1] = useState('');
   const [description2, setDescription2] = useState('');
+  const [gender, setGender] = useState('Male');
 
   const syncWeekHourKeys = useCallback(() => {
     if (scheduleType !== 'ONLY_CLASS' || !fromDate || !toDate) return;
@@ -65,6 +67,22 @@ export default function OdApplyPage() {
         return;
       }
       setStudentName((prev) => prev || s.name || '');
+      setRegisterNumber((prev) => prev || s.register_number || '');
+      setGender((prev) => prev || s.gender || 'Male');
+
+      const gy = s.grad_year;
+      let yearStudy = '';
+      if (gy) {
+        const currentYear = new Date().getFullYear();
+        const diff = Number(gy) - currentYear;
+        if (diff === 0) yearStudy = 'IV Year';
+        else if (diff === 1) yearStudy = 'III Year';
+        else if (diff === 2) yearStudy = 'II Year';
+        else if (diff === 3) yearStudy = 'I Year';
+      }
+      const br = s.branch || '';
+      const dy = yearStudy && br ? `${yearStudy} ${br}` : (yearStudy || br);
+      setDepartmentYear((prev) => prev || dy || '');
     })();
     return () => {
       cancelled = true;
@@ -100,6 +118,7 @@ export default function OdApplyPage() {
         setWeekHours(typeof row.week_hours === 'object' && row.week_hours ? row.week_hours : {});
         setDescription1(row.description_1 || '');
         setDescription2(row.description_2 || '');
+        setGender(row.gender || 'Male');
       } catch (e) {
         if (!cancelled) setError(e.message || 'Could not load draft');
       } finally {
@@ -145,6 +164,7 @@ export default function OdApplyPage() {
       week_hours: weekHours,
       description_1: description1,
       description_2: description2,
+      gender,
     };
   }
 
@@ -187,6 +207,40 @@ export default function OdApplyPage() {
 
   const dates = fromDate && toDate ? listWorkingDates(fromDate, toDate, excludeSundays) : [];
 
+  const previewHtml = useMemo(() => {
+    return buildOdLetterHtml({
+      subject,
+      salutation,
+      student_name: studentName,
+      register_number: registerNumber,
+      department_year: departmentYear,
+      od_category: odCategory,
+      from_date: fromDate,
+      to_date: toDate,
+      schedule_type: scheduleType,
+      exclude_sundays: excludeSundays,
+      week_hours: weekHours,
+      description_1: description1,
+      description_2: description2,
+      gender,
+    });
+  }, [
+    subject,
+    salutation,
+    studentName,
+    registerNumber,
+    departmentYear,
+    odCategory,
+    fromDate,
+    toDate,
+    scheduleType,
+    excludeSundays,
+    weekHours,
+    description1,
+    description2,
+    gender,
+  ]);
+
   if (loading) {
     return (
       <div className="py-16 text-center text-[#9CA3AF] text-sm">Loading draft…</div>
@@ -194,7 +248,7 @@ export default function OdApplyPage() {
   }
 
   return (
-    <div className="py-8 px-4 md:pl-8 md:pr-8 max-w-4xl pb-24">
+    <div className="py-8 px-4 md:pl-8 md:pr-8 max-w-[1400px] mx-auto pb-24">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="font-serif text-2xl font-bold text-[#2D334A]">OD application</h1>
@@ -213,8 +267,9 @@ export default function OdApplyPage() {
         </p>
       ) : null}
 
-      <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8 items-start">
+        <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label htmlFor="subject" className={labelClass}>
               Subject
@@ -422,6 +477,19 @@ export default function OdApplyPage() {
           >
             Save & send for review
           </button>
+        </div>
+        </div>
+
+        <div className="sticky top-8 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm flex flex-col h-[calc(100vh-4rem)] min-h-[600px]">
+          <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-3 flex items-center justify-between">
+            <span className="font-semibold text-[#2D334A] text-sm">Live PDF Preview</span>
+            <span className="text-xs text-[#9CA3AF]">Updates as you type</span>
+          </div>
+          <iframe
+            srcDoc={previewHtml}
+            className="w-full flex-1 bg-white"
+            title="PDF Preview"
+          />
         </div>
       </div>
     </div>

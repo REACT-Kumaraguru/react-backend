@@ -103,7 +103,7 @@ Kumaraguru College of Technology
 Coimbatore – 641049.`;
 
   const salutation = row.salutation === 'Sir' ? 'Respected Sir,' : 'Respected Madam,';
-  const honorific = row.salutation === 'Sir' ? 'Mr.' : 'Ms.';
+  const honorific = row.gender === 'Female' ? 'Ms.' : 'Mr.';
   const odTitle = row.od_category === 'ON_DUTY' ? 'On-Duty' : 'Special On-Duty';
   const subject = row.subject || `Request for ${odTitle} Approval`;
 
@@ -113,6 +113,8 @@ Coimbatore – 641049.`;
 
   let tableRows = '';
   const wh = row.week_hours && typeof row.week_hours === 'object' ? row.week_hours : {};
+  const scheduleType = row.schedule_type || 'ONLY_CLASS';
+
   const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dowMap = {}; // { 'Monday': Set([1, 2]), ... }
 
@@ -169,7 +171,7 @@ Coimbatore – 641049.`;
 <title>${escapeHtml(subject)}</title>
 <style>
   body {
-    font-family: 'Liberation Serif', 'Times New Roman', Times, serif;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 11pt;
     line-height: 1.55;
     max-width: 680px;
@@ -182,7 +184,7 @@ Coimbatore – 641049.`;
   .label:first-of-type { margin-top: 0; }
   .addr { margin-bottom: 12px; line-height: 1.45; }
   .subject {
-    font-family: 'Liberation Sans', Arial, Helvetica, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 11pt;
     font-weight: 700;
     margin: 18px 0 12px;
@@ -201,7 +203,7 @@ Coimbatore – 641049.`;
     border-collapse: collapse;
     margin: 12px 0 14px;
     font-size: 10pt;
-    font-family: 'Liberation Sans', Arial, Helvetica, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
   }
   th, td { border: 1px solid #222; padding: 8px 10px; vertical-align: top; }
   th { background: #f0f0f0; font-weight: 600; text-align: left; }
@@ -215,6 +217,11 @@ Coimbatore – 641049.`;
     width: 100%;
   }
   .sign-row span { color: #333; }
+  /* Custom scrollbar to make preview look clean */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   @media print { body { margin: 0; } }
 </style>
 </head>

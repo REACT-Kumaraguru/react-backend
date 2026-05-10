@@ -1,7 +1,25 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
-import { getSession, logoutAdmin, changePassword, profileImageSrc, fetchTodayBirthdays } from '../api/workplaceApi';
+import { getSession, logoutAdmin, changePassword, profileImageSrc, fetchTodayBirthdays, updateProfile, updateProfilePic, fetchWorkplaceRoles } from '../api/workplaceApi';
+
+const BRANCH_OPTIONS = [
+  'B.E (Aeronautical Engineering)',
+  'B.E (Automobile Engineering)',
+  'B.E (Civil Engineering)',
+  'B.E (Electrical and Electronics Engineering)',
+  'B.E (Electronics and Instrumentation Engineering)',
+  'B.Tech (Information Technology)',
+  'B.E (Mechatronics Engineering)',
+  'B.Tech (Artificial Intelligence & Data Science)',
+  'B.Tech (Biotechnology)',
+  'B.E (Computer Science and Engineering)',
+  'B.E (Electronics and Communication Engineering)',
+  'B.Tech (Fashion Technology)',
+  'B.E (Mechanical Engineering)',
+  'B.Tech (Textile Technology)',
+];
+const GRAD_YEARS = [2026, 2027, 2028, 2029];
 
 export default function WorkplaceUserDashboard() {
   const navigate = useNavigate();
@@ -16,6 +34,11 @@ export default function WorkplaceUserDashboard() {
   const [pwOk, setPwOk] = useState(false);
   const [birthdayPeople, setBirthdayPeople] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
+  const [allRoles, setAllRoles] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,12 +77,27 @@ export default function WorkplaceUserDashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    fetchWorkplaceRoles().then(setAllRoles).catch(console.error);
+  }, []);
+
   const academicLine = useMemo(() => {
     if (!session) return '';
     const deg = session.degree || 'UG';
     const br = session.branch || '—';
     const gy = session.grad_year;
     const yr = gy ? `${gy}–${Number(gy) + 1}` : '2025–2026';
+
+    let yearOfStudy = '';
+    if (gy) {
+      const currentYear = new Date().getFullYear(); // 2026
+      const diff = gy - currentYear;
+      if (diff === 0) yearOfStudy = '4th Year';
+      else if (diff === 1) yearOfStudy = '3rd Year';
+      else if (diff === 2) yearOfStudy = '2nd Year';
+      else if (diff === 3) yearOfStudy = '1st Year';
+    }
+
     return `${deg} · ${br} | ${yr}`;
   }, [session]);
 
@@ -70,6 +108,18 @@ export default function WorkplaceUserDashboard() {
     return [core, core, core];
   }, [session]);
 
+  const yearOfStudy = useMemo(() => {
+    const gy = session?.grad_year;
+    if (!gy) return '—';
+    const currentYear = new Date().getFullYear(); // 2026
+    const diff = Number(gy) - currentYear;
+    if (diff === 0) return '4th Year';
+    if (diff === 1) return '3rd Year';
+    if (diff === 2) return '2nd Year';
+    if (diff === 3) return '1st Year';
+    return '—';
+  }, [session]);
+
   async function logout() {
     try {
       await logoutAdmin();
@@ -77,6 +127,56 @@ export default function WorkplaceUserDashboard() {
       /* */
     }
     navigate('/workplace/login', { replace: true });
+  }
+
+  async function handleProfilePicChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append('profilePic', file);
+      await updateProfilePic(fd);
+      const updatedSession = await getSession();
+      setSession(updatedSession);
+    } catch (err) {
+      alert(err.message || 'Failed to update profile picture');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleUpdateProfile(e) {
+    e.preventDefault();
+    setEditError('');
+    setEditSaving(true);
+    try {
+      const res = await updateProfile(editForm);
+      if (res.message) {
+        alert(res.message);
+      }
+      setIsEditing(false);
+    } catch (err) {
+      setEditError(err.message || 'Failed to update profile');
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  function openEdit() {
+    setEditForm({
+      name: session.name,
+      phone: session.phone,
+      degree: session.degree,
+      gradYear: session.grad_year,
+      branch: session.branch,
+      dob: session.dob ? new Date(session.dob).toISOString().split('T')[0] : '',
+      gender: session.gender || 'Male',
+      registerNumber: session.register_number || '',
+      workplaceRoleId: session.workplace_role_id || '',
+    });
+    setEditError('');
+    setIsEditing(true);
   }
 
   async function handleChangePassword(e) {
@@ -180,7 +280,7 @@ export default function WorkplaceUserDashboard() {
         {/* Top header strip */}
         <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-white bg-sky-100 shadow-md ring-2 ring-sky-200 sm:h-14 sm:w-14">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-white bg-sky-100 shadow-md ring-2 ring-sky-200 sm:h-14 sm:w-14">
               {pic ? (
                 <img src={pic} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -224,10 +324,13 @@ export default function WorkplaceUserDashboard() {
               <dl className="mt-4 grid gap-y-2.5 text-sm sm:mt-6 sm:gap-y-3">
                 <ProfileRow label="Role" value={session.workplace_role_name || '—'} />
                 <ProfileRow label="Email" value={session.email} />
+                <ProfileRow label="Register number" value={session.register_number || '—'} />
                 <ProfileRow label="Phone" value={session.phone || '—'} />
                 <ProfileRow label="Date of birth" value={dobStr} />
+                <ProfileRow label="Gender" value={session.gender || '—'} />
                 <ProfileRow label="Degree" value={session.degree || '—'} />
                 <ProfileRow label="Department / Branch" value={session.branch || '—'} />
+                <ProfileRow label="Year of study" value={yearOfStudy} />
                 <ProfileRow label="Graduation year" value={session.grad_year ?? '—'} />
                 <ProfileRow label="College" value={session.institution} />
               </dl>
@@ -239,6 +342,13 @@ export default function WorkplaceUserDashboard() {
         <div className="mt-6 flex flex-col gap-4 border-t border-sky-200/80 pt-5 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:pt-6">
           <h3 className="text-base font-bold text-black sm:text-lg">Profile</h3>
           <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={openEdit}
+              className="w-full rounded-lg bg-[#1976d2] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1565c0] sm:w-auto"
+            >
+              Edit Profile
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -342,6 +452,172 @@ export default function WorkplaceUserDashboard() {
                   className="rounded-lg bg-[#1976d2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1565c0] disabled:opacity-50"
                 >
                   {pwSaving ? 'Saving…' : 'Update password'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      {isEditing ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h4 className="text-lg font-bold text-[#0d47a1]">Edit Profile</h4>
+
+            <div className="mt-4 flex flex-col items-center">
+              <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-sky-100 bg-sky-50 group">
+                {pic ? (
+                  <img src={pic} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-sky-600">
+                    {(session.name || '?').slice(0, 1)}
+                  </div>
+                )}
+                <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <span className="text-xs font-bold text-white uppercase tracking-tighter">Change</span>
+                  <input type="file" className="hidden" accept="image/*" onChange={handleProfilePicChange} />
+                </label>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">Change Profile Photo</p>
+            </div>
+            <form onSubmit={handleUpdateProfile} className="mt-6 space-y-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500">Name</label>
+                <input
+                  type="text"
+                  value={editForm.name || ''}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-500">Register Number</label>
+                  <input
+                    type="text"
+                    value={editForm.registerNumber || ''}
+                    onChange={(e) => setEditForm({ ...editForm, registerNumber: e.target.value })}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-500">Phone</label>
+                  <input
+                    type="tel"
+                    value={editForm.phone || ''}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500">Date of Birth</label>
+                <input
+                  type="date"
+                  value={editForm.dob || ''}
+                  onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-500">Gender</label>
+                  <select
+                    value={editForm.gender || 'Male'}
+                    onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-500">Degree</label>
+                  <select
+                    value={editForm.degree || 'UG'}
+                    onChange={(e) => setEditForm({ ...editForm, degree: e.target.value })}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                  >
+                    <option value="UG">UG</option>
+                    <option value="PG">PG</option>
+                    <option value="Ph.D">Ph.D</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500">Department / Branch</label>
+                <select
+                  value={editForm.branch || ''}
+                  onChange={(e) => setEditForm({ ...editForm, branch: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                  {BRANCH_OPTIONS.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500">Graduation Year</label>
+                <select
+                  value={editForm.gradYear || ''}
+                  onChange={(e) => setEditForm({ ...editForm, gradYear: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                  {GRAD_YEARS.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500">Workplace Role</label>
+                <select
+                  value={editForm.workplaceRoleId || ''}
+                  onChange={(e) => setEditForm({ ...editForm, workplaceRoleId: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                  <option value="">Select Role</option>
+                  {allRoles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {editError ? (
+                <p className="text-sm text-red-600" role="alert">
+                  {editError}
+                </p>
+              ) : null}
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={editSaving}
+                  className="rounded-lg bg-[#1976d2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1565c0] disabled:opacity-50"
+                >
+                  {editSaving ? 'Saving…' : 'Save Changes'}
                 </button>
               </div>
             </form>

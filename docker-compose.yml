@@ -21,6 +21,8 @@ services:
   api:
     build: ./backend
     container_name: react-api
+    ports:
+    - "4000:4000"
     env_file:
       - path: ./backend/.env
         required: false
@@ -41,11 +43,13 @@ services:
     container_name: react-frontend
     depends_on:
       - api
+    ports:
+      - "3000:80"
 
 networks:
   default:
-    external:
-      name: idea-lab_default
+    name: react-web-network
+
 
 volumes:
   pgdata:
