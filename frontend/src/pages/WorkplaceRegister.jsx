@@ -7,7 +7,23 @@ const inputClass =
 const labelClass = 'mb-1.5 block text-sm font-medium text-[#9CA3AF]';
 
 const DEGREES = ['UG', 'PG', 'Ph.D', 'Diploma', 'Other'];
-const GRAD_YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+const GRAD_YEARS = [2026, 2027, 2028, 2029];
+const BRANCH_OPTIONS = [
+  'B.E (Aeronautical Engineering)',
+  'B.E (Automobile Engineering)',
+  'B.E (Civil Engineering)',
+  'B.E (Electrical and Electronics Engineering)',
+  'B.E (Electronics and Instrumentation Engineering)',
+  'B.Tech (Information Technology)',
+  'B.E (Mechatronics Engineering)',
+  'B.Tech (Artificial Intelligence & Data Science)',
+  'B.Tech (Biotechnology)',
+  'B.E (Computer Science and Engineering)',
+  'B.E (Electronics and Communication Engineering)',
+  'B.Tech (Fashion Technology)',
+  'B.E (Mechanical Engineering)',
+  'B.Tech (Textile Technology)',
+];
 
 export default function WorkplaceRegister() {
   const [name, setName] = useState('');
@@ -15,8 +31,10 @@ export default function WorkplaceRegister() {
   const [phone, setPhone] = useState('');
   const [degree, setDegree] = useState('UG');
   const [gradYear, setGradYear] = useState('2026');
-  const [branch, setBranch] = useState('');
+  const [branch, setBranch] = useState(BRANCH_OPTIONS[0]);
   const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('Male');
+  const [registerNumber, setRegisterNumber] = useState('');
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -67,6 +85,8 @@ export default function WorkplaceRegister() {
       fd.append('gradYear', gradYear);
       fd.append('branch', branch);
       fd.append('dob', dob);
+      fd.append('gender', gender);
+      fd.append('registerNumber', registerNumber);
       fd.append('profilePic', file);
       fd.append('workplaceRoleId', workplaceRoleId);
 
@@ -170,6 +190,19 @@ export default function WorkplaceRegister() {
                   />
                 </div>
                 <div>
+                  <label htmlFor="registerNumber" className={labelClass}>
+                    Register number <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="registerNumber"
+                    value={registerNumber}
+                    onChange={(e) => setRegisterNumber(e.target.value)}
+                    placeholder="e.g. 71782110001"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div>
                   <label htmlFor="phone" className={labelClass}>
                     Phone number <span className="text-red-500">*</span>
                   </label>
@@ -195,6 +228,21 @@ export default function WorkplaceRegister() {
                     className={inputClass}
                     required
                   />
+                </div>
+                <div>
+                  <label htmlFor="gender" className={labelClass}>
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className={inputClass}
+                    required
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="workplaceRole" className={labelClass}>
@@ -262,14 +310,19 @@ export default function WorkplaceRegister() {
                   <label htmlFor="branch" className={labelClass}>
                     Branch <span className="text-red-500">*</span>
                   </label>
-                  <input
+                  <select
                     id="branch"
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
-                    placeholder="e.g., Computer Science / Mechanical / Electronics"
                     className={inputClass}
                     required
-                  />
+                  >
+                    {BRANCH_OPTIONS.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </section>

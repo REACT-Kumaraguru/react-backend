@@ -203,7 +203,7 @@ export const Work = () => {
       </div>
       
 
-            {/* CARD 4: Electronics / EEE Engineer – Embedded Systems & Automation */}
+      {/* CARD 4: Electronics / EEE Engineer – Embedded Systems & Automation */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
         <div className="w-full md:w-3 bg-[#ea580c]"></div> {/* Orange Accent for Electronics */}
         <div className="p-8 flex-1">
@@ -234,6 +234,44 @@ export const Work = () => {
               View Details
             </Link>
             <Link to="/work-elec-form" className="inline-flex items-center justify-center bg-[#ea580c] hover:bg-[#c2410c] text-white px-6 py-2 rounded-lg font-bold transition-all shadow-sm text-sm">
+              Apply Now
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* CARD 5: Internship – Innovation & Growth */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col md:flex-row">
+        <div className="w-full md:w-3 bg-[#4f46e5]"></div> {/* Indigo Accent for Internship */}
+        <div className="p-8 flex-1">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <span className="text-[10px] font-bold text-[#4f46e5] uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                Student Role
+              </span>
+              <h2 className="text-2xl font-bold text-gray-800 mt-3 tracking-tight">
+                Internship – Innovation & Growth
+              </h2>
+            </div>
+            <div className="hidden md:block text-right">
+              <p className="text-xs text-gray-400 uppercase font-bold tracking-tighter">Location</p>
+              <p className="text-sm font-semibold text-gray-700 uppercase">Coimbatore</p>
+            </div>
+          </div>
+          <p className="text-gray-600 mb-6 line-clamp-2 text-sm leading-relaxed">
+            Join REACT's innovation ecosystem and gain real-world exposure in operations, marketing, and business development. 
+            Support institutional coordination and branding strategy while building future-ready skills.
+          </p>
+          <div className="flex flex-wrap gap-2 mb-8">
+            <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">Open to All Departments</span>
+            <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">KCT Students</span>
+            <span className="text-[11px] bg-gray-50 text-gray-500 border px-2 py-1 rounded font-medium">Hands-on Learning</span>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link to="/work-intern-info" className="inline-flex items-center justify-center border-2 border-[#4f46e5] text-[#4f46e5] hover:bg-indigo-50 px-6 py-2 rounded-lg font-bold transition-all text-sm">
+              View Details
+            </Link>
+            <Link to="/work-intern-form" className="inline-flex items-center justify-center bg-[#4f46e5] hover:bg-[#4338ca] text-white px-6 py-2 rounded-lg font-bold transition-all shadow-sm text-sm">
               Apply Now
             </Link>
           </div>

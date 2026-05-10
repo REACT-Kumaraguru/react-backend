@@ -47,6 +47,8 @@ import { WebDeveloperInfo } from './components/WorkCom/WebDeveloperInfo';
 import { WebDeveloperForm } from './components/WorkCom/WebDeveloperForm';
 import { ResearchInternInfo } from './components/WorkCom/ResearchInternInfo';
 import { ResearchInternForm } from './components/WorkCom/ResearchInternForm';
+import { InternshipInfo } from './components/WorkCom/InternshipInfo';
+import { InternshipForm } from './components/WorkCom/InternshipForm';
 import { InterestInfo } from './components/WorkCom/InterestInfo';
 import { InterestForm } from './components/WorkCom/InterestForm';
 
@@ -62,6 +64,7 @@ import AdminUsersLayout from './layouts/AdminUsersLayout';
 import AdminActiveUsersPage from './pages/admin/AdminActiveUsersPage';
 import AdminODPage from './pages/admin/AdminODPage';
 import AdminProjectsPage from './pages/admin/AdminProjectsPage';
+import AdminProfileRequestsPage from './pages/admin/AdminProfileRequestsPage';
 import AdminProgrammeGuard from './components/programmes/AdminProgrammeGuard';
 import ProgrammeAdmin from './components/programmes/ProgrammeAdmin';
 import { ToastProvider } from './components/programmes/Toast';
@@ -156,9 +159,9 @@ function AppContent() {
         <Route path="/work-web-developer-info" element={<WebDeveloperInfo />} />
         <Route path="/work-web-developer-form" element={<WebDeveloperForm />} />
 
-        {/* ✅ NEW Research Intern Routes */}
-        <Route path="/work-research-intern-info" element={<ResearchInternInfo />} />
-        <Route path="/work-research-intern-form" element={<ResearchInternForm />} />
+        {/* ✅ NEW Internship Routes */}
+        <Route path="/work-intern-info" element={<InternshipInfo />} />
+        <Route path="/work-intern-form" element={<InternshipForm />} />
 
         <Route path="/work-advisor-info" element={<AdvisorInfo />} />
         <Route path="/work-advisor-form" element={<AdviForm />} />
@@ -183,6 +186,7 @@ function AppContent() {
             <Route path=":filter" element={<AdminUsersPage />} />
           </Route>
           <Route path="active-users" element={<AdminActiveUsersPage />} />
+          <Route path="profile-requests" element={<AdminProfileRequestsPage />} />
           <Route path="od" element={<AdminODPage />} />
           <Route path="manage-admins" element={<AdminAdminsPage />} />
           <Route path="registration-roles" element={<AdminWorkplaceRolesPage />} />

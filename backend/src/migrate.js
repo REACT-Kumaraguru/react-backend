@@ -138,4 +138,21 @@ export async function runMigrations() {
     );
     CREATE INDEX IF NOT EXISTS idx_field_projects_sort ON field_projects (sort_order, id);
   `);
+  await pool.query(`
+    ALTER TABLE applications ADD COLUMN IF NOT EXISTS gender VARCHAR(10);
+    ALTER TABLE applications ADD COLUMN IF NOT EXISTS register_number VARCHAR(50);
+
+    CREATE TABLE IF NOT EXISTS profile_update_requests (
+      id SERIAL PRIMARY KEY,
+      application_id INT NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+      old_data JSONB NOT NULL,
+      new_data JSONB NOT NULL,
+      status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      decided_at TIMESTAMPTZ,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_profile_req_app ON profile_update_requests(application_id);
+    CREATE INDEX IF NOT EXISTS idx_profile_req_status ON profile_update_requests(status);
+  `);
 }

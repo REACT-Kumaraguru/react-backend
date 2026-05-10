@@ -26,6 +26,33 @@ export async function getSession() {
     return null;
   }
 }
+ 
+export async function updateProfile(body) {
+  const res = await fetch(apiUrl('/api/auth/me'), {
+    method: 'PATCH',
+    headers: jsonHeaders(),
+    body: JSON.stringify(body),
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'Could not update profile');
+  }
+  return data;
+}
+
+export async function updateProfilePic(formData) {
+  const res = await fetch(apiUrl('/api/auth/me/profile-pic'), {
+    method: 'POST',
+    body: formData,
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'Could not update profile picture');
+  }
+  return data;
+}
 
 /** Admin or approved user login (same endpoint). */
 export async function login(email, password) {
@@ -216,6 +243,36 @@ export async function updateApplicationStatus(id, status) {
   return data;
 }
 
+export async function adminUpdateUser(id, body) {
+  const res = await fetch(apiUrl(`/api/admin/applications/${id}`), {
+    method: 'PATCH',
+    headers: jsonHeaders(),
+    body: JSON.stringify(body),
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401 || res.status === 403) {
+    const err = new Error(data.error || 'Forbidden');
+    err.code = res.status;
+    throw err;
+  }
+  if (!res.ok) throw new Error(data.error || 'Could not update user');
+  return data;
+}
+
+export async function adminUpdateProfilePic(id, formData) {
+  const res = await fetch(apiUrl(`/api/admin/applications/${id}/profile-pic`), {
+    method: 'POST',
+    body: formData,
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'Could not update profile picture');
+  }
+  return data;
+}
+
 export async function deleteApplication(id) {
   const res = await fetch(apiUrl(`/api/admin/applications/${id}`), {
     method: 'DELETE',
@@ -384,4 +441,26 @@ export function odLetterUrl(id, isAdmin, opts = {}) {
   const path = isAdmin ? `/api/admin/od/submissions/${id}/letter` : `/api/od/submissions/${id}/letter`;
   const q = opts.format === 'html' ? '?format=html' : '';
   return apiUrl(path + q);
+}
+
+export async function fetchProfileUpdateRequests() {
+  const res = await fetch(apiUrl('/api/admin/profile-updates'), {
+    headers: jsonHeaders(),
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => []);
+  if (!res.ok) throw new Error(data.error || 'Could not load requests');
+  return data;
+}
+
+export async function decideProfileUpdateRequest(id, action) {
+  const res = await fetch(apiUrl(`/api/admin/profile-updates/${id}/decide`), {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ action }),
+    ...fetchDefaults(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Could not update request');
+  return data;
 }

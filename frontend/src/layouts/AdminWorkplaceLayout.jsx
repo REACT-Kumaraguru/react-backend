@@ -12,6 +12,7 @@ import {
   Shield,
   ShieldAlert,
   GraduationCap,
+  UserCog,
 } from 'lucide-react';
 import { getSession, logoutAdmin, fetchActiveUsersCount } from '../api/workplaceApi';
 import WorkplaceLogo from '../components/WorkplaceLogo';
@@ -93,6 +94,15 @@ export default function AdminWorkplaceLayout() {
           >
             <XCircle className="h-4 w-4 shrink-0" aria-hidden />
             Rejected
+          </NavLink>
+          <NavLink
+            to="/workplace/admin/profile-requests"
+            className={({ isActive }) =>
+              `${linkBase} ${isActive ? 'bg-[#2D334A] text-white' : 'text-[#2D334A]/80 hover:bg-gray-100'}`
+            }
+          >
+            <UserCog className="h-4 w-4 shrink-0" aria-hidden />
+            Profile requests
           </NavLink>
         </nav>
 
