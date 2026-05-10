@@ -8,10 +8,10 @@ export const InternshipInfo = () => {
             {/* ================= HERO SECTION ================= */}
             <section className="px-6 py-20 mt-10 text-center max-w-5xl mx-auto">
                 <div className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-600 uppercase bg-blue-50 border border-blue-100 rounded-full">
-                    Innovation Lab Internships
+                    
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold leading-tight mt-4 mb-6">
-                    Build Beyond the Classroom
+                    Administration & Management - Internship     
                 </h1>
 
                 <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto">

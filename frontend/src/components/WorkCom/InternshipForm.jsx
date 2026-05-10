@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { submitInternshipForm } from "../../api/googleFormApi";
 
-const steps = ["Personal Details", "Academic Info", "Position Interest", "Skills & Availability", "Documents"];
+const steps = ["Personal Details", "Position Interest", "Skills & Availability", "Documents"];
 
 export const InternshipForm = () => {
   const [step, setStep] = useState(0);
@@ -12,6 +12,7 @@ export const InternshipForm = () => {
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", email: "", phone: "", location: "",
+    linkedinId: "",
     university: "", degree: "", yearOfStudy: "",
     preferredRole: "", roleInterest: "", relevantExperience: "",
     skills: [], availability: "", duration: "",
@@ -21,9 +22,9 @@ export const InternshipForm = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setShowErrors(false);
-    
+
     if (type === "checkbox" && name === "skills") {
-      const updatedSkills = checked 
+      const updatedSkills = checked
         ? [...formData.skills, value]
         : formData.skills.filter(s => s !== value);
       setFormData({ ...formData, skills: updatedSkills });
@@ -35,8 +36,8 @@ export const InternshipForm = () => {
   const handleFile = (e, fileType) => {
     const file = e.target.files[0];
     if (!file || (file.type !== "application/pdf" && !file.type.includes("word"))) {
-        alert("Please upload a valid PDF or Word document.");
-        return;
+      alert("Please upload a valid PDF or Word document.");
+      return;
     }
     if (fileType === "resume") setResumeFile(file);
     if (fileType === "coverLetter") setCoverLetterFile(file);
@@ -49,23 +50,21 @@ export const InternshipForm = () => {
       if (!formData.lastName.trim()) errors.lastName = "Last name is required";
       if (!/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = "Invalid email format";
       if (formData.phone.length < 10) errors.phone = "Provide a valid phone number";
-    }
-    if (step === 1) {
-      if (!formData.university.trim()) errors.university = "University name is required";
-      if (!formData.degree) errors.degree = "Degree selection is required";
+      if (!formData.university) errors.university = "College selection is required";
+      if (!formData.degree.trim()) errors.degree = "Degree / Program is required";
       if (!formData.yearOfStudy) errors.yearOfStudy = "Year of study is required";
     }
-    if (step === 2) {
+    if (step === 1) {
       if (!formData.preferredRole) errors.preferredRole = "Please select a preferred role";
       if (formData.roleInterest.length < 50) errors.roleInterest = "Please provide more detail (min 50 chars)";
       if (!formData.relevantExperience.trim()) errors.relevantExperience = "Please describe your experience";
     }
-    if (step === 3) {
+    if (step === 2) {
       if (formData.skills.length === 0) errors.skills = "Please select at least one skill";
       if (!formData.availability) errors.availability = "Availability selection is required";
       if (!formData.duration) errors.duration = "Preferred duration is required";
     }
-    if (step === 4) {
+    if (step === 3) {
       if (!resumeFile) errors.resume = "Resume is mandatory";
       if (!formData.referral) errors.referral = "Please tell us how you heard about us";
     }
@@ -101,7 +100,7 @@ export const InternshipForm = () => {
       const submissionData = {
         ...formData,
         resume: resumeFile,
-        coverLetter: coverLetterFile
+        coverLetter: coverLetterFile,
       };
 
       const result = await submitInternshipForm(submissionData);
@@ -121,16 +120,17 @@ export const InternshipForm = () => {
     }
   };
 
-  const ErrorMsg = ({ field }) => (
-    showErrors && currentErrors[field] ? <p className="text-red-500 text-xs mt-1 font-medium">{currentErrors[field]}</p> : null
-  );
+  const ErrorMsg = ({ field }) =>
+    showErrors && currentErrors[field] ? (
+      <p className="text-red-500 text-xs mt-1 font-medium">{currentErrors[field]}</p>
+    ) : null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4 md:p-8">
-      <div className="h-20 w-full" /> 
+      <div className="h-20 w-full" />
 
       <div className="bg-white w-full max-w-3xl rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
-        
+
         {/* Stepper */}
         <div className="flex items-center justify-between mb-10 overflow-x-auto pb-4">
           {steps.map((label, i) => (
@@ -146,66 +146,87 @@ export const InternshipForm = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">{steps[step]}</h2>
 
         <div className="space-y-6">
-          {/* STEP 0: PERSONAL DETAILS */}
+
+          {/* STEP 0: PERSONAL DETAILS + ACADEMIC INFO */}
           {step === 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">First Name *</label>
-                <input name="firstName" onChange={handleChange} value={formData.firstName} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.firstName ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="firstName" />
+            <div className="space-y-6">
+              {/* Personal Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">First Name *</label>
+                  <input name="firstName" onChange={handleChange} value={formData.firstName} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.firstName ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
+                  <ErrorMsg field="firstName" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Last Name *</label>
+                  <input name="lastName" onChange={handleChange} value={formData.lastName} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.lastName ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
+                  <ErrorMsg field="lastName" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Email ID *</label>
+                  <input name="email" type="email" onChange={handleChange} value={formData.email} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.email ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
+                  <ErrorMsg field="email" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number *</label>
+                  <input name="phone" type="tel" onChange={handleChange} value={formData.phone} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.phone ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
+                  <ErrorMsg field="phone" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Current Location</label>
+                  <input name="location" onChange={handleChange} value={formData.location} className="w-full border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">LinkedIn Profile URL</label>
+                  <input
+                    name="linkedinId"
+                    type="url"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    onChange={handleChange}
+                    value={formData.linkedinId}
+                    className="w-full border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Last Name *</label>
-                <input name="lastName" onChange={handleChange} value={formData.lastName} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.lastName ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="lastName" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email ID *</label>
-                <input name="email" type="email" onChange={handleChange} value={formData.email} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.email ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="email" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number *</label>
-                <input name="phone" type="tel" onChange={handleChange} value={formData.phone} className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.phone ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="phone" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Current Location</label>
-                <input name="location" onChange={handleChange} value={formData.location} className="w-full border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
+
+              {/* Academic Info (merged) */}
+              <div className="pt-4 border-t">
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Academic Information</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">College / University *</label>
+                    <select name="university" onChange={handleChange} value={formData.university} className={`w-full border p-3 rounded-lg outline-none bg-white ${showErrors && currentErrors.university ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}>
+                      <option value="">Select College</option>
+                      <option value="KCT">KCT</option>
+                      <option value="KCT-BS">KCT-BS</option>
+                      <option value="KCLAS">KCLAS</option>
+                    </select>
+                    <ErrorMsg field="university" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Degree / Program *</label>
+                    <input name="degree" onChange={handleChange} value={formData.degree} placeholder="e.g. B.Tech Mechanical" className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.degree ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
+                    <ErrorMsg field="degree" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Year of Study *</label>
+                    <select name="yearOfStudy" onChange={handleChange} value={formData.yearOfStudy} className={`w-full border p-3 rounded-lg outline-none bg-white ${showErrors && currentErrors.yearOfStudy ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}>
+                      <option value="">Select Year</option>
+                      <option value="1st">1st Year</option>
+                      <option value="2nd">2nd Year</option>
+                      <option value="3rd">3rd Year</option>
+                      <option value="4th">4th Year</option>
+                      <option value="postgrad">Post Graduate</option>
+                    </select>
+                    <ErrorMsg field="yearOfStudy" />
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* STEP 1: ACADEMIC INFO */}
+          {/* STEP 1: POSITION INTEREST */}
           {step === 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">University / College *</label>
-                <input name="university" onChange={handleChange} value={formData.university} placeholder="Your Institution Name" className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.university ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="university" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Degree / Program *</label>
-                <input name="degree" onChange={handleChange} value={formData.degree} placeholder="e.g. B.Tech Mechanical" className={`w-full border p-3 rounded-lg outline-none ${showErrors && currentErrors.degree ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} />
-                <ErrorMsg field="degree" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Year of Study *</label>
-                <select name="yearOfStudy" onChange={handleChange} value={formData.yearOfStudy} className={`w-full border p-3 rounded-lg outline-none bg-white ${showErrors && currentErrors.yearOfStudy ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}>
-                  <option value="">Select Year</option>
-                  <option value="1st">1st Year</option>
-                  <option value="2nd">2nd Year</option>
-                  <option value="3rd">3rd Year</option>
-                  <option value="4th">4th Year</option>
-                  <option value="postgrad">Post Graduate</option>
-                </select>
-                <ErrorMsg field="yearOfStudy" />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: POSITION INTEREST */}
-          {step === 2 && (
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Preferred Internship Track *</label>
@@ -229,31 +250,31 @@ export const InternshipForm = () => {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Why do you want to join REACT? *</label>
                 <p className="text-[10px] text-gray-500 mb-2">(Minimum 50 characters required)</p>
-                <textarea 
-                  name="roleInterest" 
-                  onChange={handleChange} 
+                <textarea
+                  name="roleInterest"
+                  onChange={handleChange}
                   value={formData.roleInterest}
                   placeholder="Tell us what excites you about REACT..."
-                  className={`w-full border p-3 rounded-lg h-32 outline-none ${showErrors && currentErrors.roleInterest ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} 
+                  className={`w-full border p-3 rounded-lg h-32 outline-none ${showErrors && currentErrors.roleInterest ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}
                 />
                 <ErrorMsg field="roleInterest" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Relevant Experience *</label>
-                <textarea 
-                  name="relevantExperience" 
-                  onChange={handleChange} 
+                <textarea
+                  name="relevantExperience"
+                  onChange={handleChange}
                   value={formData.relevantExperience}
                   placeholder="Describe projects, internships or experiences..."
-                  className={`w-full border p-3 rounded-lg h-32 outline-none ${showErrors && currentErrors.relevantExperience ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`} 
+                  className={`w-full border p-3 rounded-lg h-32 outline-none ${showErrors && currentErrors.relevantExperience ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}
                 />
                 <ErrorMsg field="relevantExperience" />
               </div>
             </div>
           )}
 
-          {/* STEP 3: SKILLS & AVAILABILITY */}
-          {step === 3 && (
+          {/* STEP 2: SKILLS & AVAILABILITY */}
+          {step === 2 && (
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">What are your key skills? *</label>
@@ -284,11 +305,10 @@ export const InternshipForm = () => {
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Preferred Duration *</label>
                   <select name="duration" onChange={handleChange} value={formData.duration} className={`w-full border p-3 rounded-lg outline-none bg-white ${showErrors && currentErrors.duration ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}>
                     <option value="">Select Duration</option>
-                    <option value="1-month">1 Month</option>
-                    <option value="2-month">2 Months</option>
-                    <option value="3-month">3 Months</option>
-                    <option value="4-6-month">4-6 Months</option>
-                    <option value="flexible">Flexible</option>
+                    <option value="3-months">3 Months</option>
+                    <option value="6-months">6 Months</option>
+                    <option value="less-than-1-year">Less than 1 Year</option>
+                    <option value="1-year">1 Year</option>
                   </select>
                   <ErrorMsg field="duration" />
                 </div>
@@ -296,8 +316,8 @@ export const InternshipForm = () => {
             </div>
           )}
 
-          {/* STEP 4: DOCUMENTS */}
-          {step === 4 && (
+          {/* STEP 3: DOCUMENTS */}
+          {step === 3 && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className={`p-4 rounded-xl border transition-all ${showErrors && currentErrors.resume ? "bg-red-50 border-red-500" : "bg-blue-50 border-blue-100"}`}>
@@ -332,12 +352,12 @@ export const InternshipForm = () => {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Information (Optional)</label>
-                <textarea 
-                  name="additionalInfo" 
-                  onChange={handleChange} 
+                <textarea
+                  name="additionalInfo"
+                  onChange={handleChange}
                   value={formData.additionalInfo}
                   placeholder="Anything else you'd like us to know?"
-                  className="w-full border border-gray-300 p-3 rounded-lg h-24 outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="w-full border border-gray-300 p-3 rounded-lg h-24 outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -351,17 +371,17 @@ export const InternshipForm = () => {
           </button>
 
           {step < steps.length - 1 ? (
-            <button 
-                onClick={next} 
-                className={`px-10 py-2.5 rounded-lg font-semibold shadow-md transition-all ${isValid ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+            <button
+              onClick={next}
+              className={`px-10 py-2.5 rounded-lg font-semibold shadow-md transition-all ${isValid ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
             >
               Next Step
             </button>
           ) : (
-            <button 
-                onClick={submitForm} 
-                disabled={loading} 
-                className={`px-10 py-2.5 rounded-lg font-semibold shadow-md transition-all ${isValid && !loading ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+            <button
+              onClick={submitForm}
+              disabled={loading}
+              className={`px-10 py-2.5 rounded-lg font-semibold shadow-md transition-all ${isValid && !loading ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
             >
               {loading ? "Submitting..." : "Submit Application"}
             </button>
