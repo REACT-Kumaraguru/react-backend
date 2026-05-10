@@ -247,10 +247,10 @@ export const Work = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <span className="text-[10px] font-bold text-[#4f46e5] uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                Administration & Management - Intern
+                Part-Time Role
               </span>
               <h2 className="text-2xl font-bold text-gray-800 mt-3 tracking-tight">
-                Internship – Innovation & Growth
+                Administration & Management - Intern
               </h2>
             </div>
             <div className="hidden md:block text-right">

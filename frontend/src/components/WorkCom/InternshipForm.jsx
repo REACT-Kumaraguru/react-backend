@@ -177,7 +177,7 @@ export const InternshipForm = () => {
                   <input name="location" onChange={handleChange} value={formData.location} className="w-full border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">LinkedIn Profile URL</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">LinkedIn Profile URL *</label>
                   <input
                     name="linkedinId"
                     type="url"
@@ -194,7 +194,7 @@ export const InternshipForm = () => {
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Academic Information</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">College / University *</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">College *</label>
                     <select name="university" onChange={handleChange} value={formData.university} className={`w-full border p-3 rounded-lg outline-none bg-white ${showErrors && currentErrors.university ? "border-red-500" : "border-gray-300 focus:ring-2 focus:ring-blue-500"}`}>
                       <option value="">Select College</option>
                       <option value="KCT">KCT</option>
@@ -216,7 +216,9 @@ export const InternshipForm = () => {
                       <option value="2nd">2nd Year</option>
                       <option value="3rd">3rd Year</option>
                       <option value="4th">4th Year</option>
-                      <option value="postgrad">Post Graduate</option>
+                      <option value="postgrad">Post Graduate - 1st Year</option>
+                      <option value="postgrad">Post Graduate - 2nd Year</option>
+
                     </select>
                     <ErrorMsg field="yearOfStudy" />
                   </div>
