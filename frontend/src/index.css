@@ -1,0 +1,326 @@
+/* Google Fonts MUST be at the top */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+/* Inter / Inter Tight — used only by the /projects/shrimp-feeder page */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800;900&display=swap');
+
+/* Tailwind import */
+@import "tailwindcss";
+
+html {
+  font-size: 118%;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 108%;
+  }
+}
+
+@keyframes navbar-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+.navbar-float {
+  animation: navbar-float 2.5s ease-in-out infinite;
+}
+
+@keyframes rotateAnim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.prog-border-anim {
+  animation: rotateAnim 3s linear infinite;
+}
+
+.domain-border-anim {
+  animation: rotateAnim 3s linear infinite;
+}
+
+/* ── Journey page: Five Phases — mobile overrides (desktop untouched) ── */
+@media (max-width: 1023px) {
+  .phase-stack-card {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  /* The inner content grid uses h-full which collapses when parent is auto height */
+  .phase-stack-card > div {
+    height: auto !important;
+  }
+  .phase-col-scroll {
+    overflow-y: visible !important;
+    height: auto !important;
+  }
+}
+
+/* =========================================================================
+   Shrimp Feeder page — Tailwind token mappings (ADDITIVE).
+   Translates the source project's tailwind.config.js (Tailwind v3) into a
+   v4 @theme block. Colour values are var-indirected and defined scoped on
+   `.shrimp-feeder-page` (in shrimpFeederCom/shrimp-feeder.css), so these
+   utilities resolve only inside that page. Animations are namespaced `sf-*`
+   to avoid colliding with the Khyora `float/ripple/shimmer` keyframes.
+   Names verified unused elsewhere in react-backend.
+   ========================================================================= */
+@theme inline {
+  --color-abyss: var(--sf-abyss);
+  --color-ocean: var(--sf-ocean);
+  --color-cyanic: var(--sf-cyanic);
+  --color-teal: var(--sf-teal);
+  --color-seafoam: var(--sf-seafoam);
+
+  --font-display: "Inter Tight", system-ui, -apple-system, sans-serif;
+
+  --shadow-glow: 0 0 40px -8px rgba(34, 211, 238, 0.45);
+  --shadow-glow-lg: 0 0 80px -10px rgba(34, 211, 238, 0.5);
+  --shadow-glow-teal: 0 0 50px -8px rgba(45, 212, 191, 0.45);
+  --shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+
+  --animate-sf-float: sf-float 6s ease-in-out infinite;
+  --animate-sf-float-slow: sf-float-slow 9s ease-in-out infinite;
+  --animate-sf-ripple: sf-ripple 3s ease-out infinite;
+  --animate-sf-shimmer: sf-shimmer 3s linear infinite;
+  --animate-sf-pulse-glow: sf-pulse-glow 3s ease-in-out infinite;
+  --animate-sf-spin-slow: sf-spin-slow 24s linear infinite;
+  --animate-sf-gradient-x: sf-gradient-x 6s ease infinite;
+}
+
+/* =========================================================================
+   Khyora "Disappearing Pad" page — Tailwind token mappings (ADDITIVE).
+   These only register extra Tailwind color/animation utilities
+   (text-foreground, bg-background, bg-card, text-pearl, border-border,
+   animate-float, ...). The actual token *values* are defined, scoped, on
+   `.khyora-page` in disappearing/khyora.css, so these utilities resolve
+   only inside that page and are inert everywhere else. No existing
+   react-backend class or token uses these names.
+   ========================================================================= */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-aqua: var(--aqua);
+  --color-teal-soft: var(--teal-soft);
+  --color-pearl: var(--pearl);
+  --color-lavender: var(--lavender);
+  --color-deep: var(--deep);
+
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-ripple: ripple 4s ease-out infinite;
+  --animate-shimmer: shimmer 6s linear infinite;
+  --animate-drift: drift 20s linear infinite;
+  --animate-rise: rise 12s linear infinite;
+}
+
+/* =========================================================================
+   Therbal page - Tailwind token mappings (ADDITIVE).
+   Values are scoped on `.therbal-page` in therbalCom/therbal.css.
+   ========================================================================= */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-terracotta: var(--terracotta);
+  --color-olive: var(--olive);
+  --color-charcoal: var(--charcoal);
+
+  --shadow-soft: 0 24px 80px rgba(80, 61, 39, 0.10);
+  --shadow-lift: 0 18px 45px rgba(69, 54, 34, 0.12);
+}
+
+/* =========================================================================
+   CardioGuard / SeedVision page — Tailwind token mappings (ADDITIVE).
+   Translates the source's tailwind.config.js (Tailwind v3) palette into a
+   v4 @theme block. Colour values are var-indirected and defined scoped on
+   `.cardioguard-page` (in cardioguardCom/cardioguard.css), so these
+   utilities resolve only inside that page via the cascade. `--color-paper`,
+   `--color-cream`, `--color-muted`, `--shadow-soft`, and `--shadow-glow`
+   already exist (from therbal/khyora/shrimp-feeder); the cardioguard
+   wrapper just overrides the underlying var values inside its subtree, so
+   no global value is changed.
+   ========================================================================= */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-sage: var(--sage);
+  --color-sage-glow: var(--sage-glow);
+  --color-sage-deep: var(--sage-deep);
+  --color-green: var(--green);
+  --color-green-glow: var(--green-glow);
+  --color-green-deep: var(--green-deep);
+  --color-earth: var(--earth);
+  --color-earth-soft: var(--earth-soft);
+  --color-earth-deep: var(--earth-deep);
+
+  --shadow-earth: 0 0 46px rgba(184, 121, 69, 0.22);
+}
+
+/* =========================================================================
+   Modern custom scrollbars — modal panels
+   ========================================================================= */
+
+/* Thin scrollbar for dark-background panels (left modal panel) */
+.scroll-modern-light {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
+}
+.scroll-modern-light::-webkit-scrollbar {
+  width: 4px;
+}
+.scroll-modern-light::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 99px;
+}
+.scroll-modern-light::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.22);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+.scroll-modern-light::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.42);
+}
+
+/* Thin scrollbar for light-background panels (right modal panel) */
+.scroll-modern-dark {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.scroll-modern-dark::-webkit-scrollbar {
+  width: 4px;
+}
+.scroll-modern-dark::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 99px;
+}
+.scroll-modern-dark::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+.scroll-modern-dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.26);
+}
+
+/* Animations */
+@keyframes vertical-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.animate-vertical-scroll {
+  animation: vertical-scroll 8s linear infinite;
+}
+
+/* Pause when the user wants to read a specific item */
+.animate-vertical-scroll:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Profile dashboard: seamless horizontal ticker */
+.profile-marquee-inner {
+  display: flex;
+  width: 200%;
+  animation: marquee 42s linear infinite;
+}
+.profile-marquee-inner:hover {
+  animation-play-state: paused;
+}
+/* ── HomeLanding: scroll-bounce indicator ── */
+@keyframes home-bounce {
+  0%, 100% { transform: translateY(0) translateX(-50%); opacity: 0.6; }
+  50% { transform: translateY(8px) translateX(-50%); opacity: 1; }
+}
+
+
+/* ── Journey page animations ── */
+@keyframes journey-pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(0.5); opacity: 0.1; }
+}
+@keyframes journey-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes journey-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.journey-pulse-ring {
+  animation: journey-pulse-ring 2s ease-in-out infinite alternate;
+}
+.journey-pulse-dot {
+  animation: journey-pulse-dot 2s ease-in-out infinite;
+}
+.journey-marquee-inner {
+  display: flex;
+  animation: journey-marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-pulse-ring,
+  .journey-pulse-dot,
+  .journey-marquee-inner { animation: none; }
+}
+
+/* ── Journey page: Venture Cards — corner expansion hover ── */
+.venture-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.venture-card::before,
+.venture-card::after {
+  content: "";
+  position: absolute;
+  width: 22%;
+  height: 22%;
+  background-color: rgba(224, 92, 58, 0.13);
+  transition: width 0.5s ease, height 0.5s ease, border-radius 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.venture-card::before {
+  top: 0;
+  right: 0;
+  border-radius: 0 16px 0 100%;
+}
+
+.venture-card::after {
+  bottom: 0;
+  left: 0;
+  border-radius: 0 100% 0 16px;
+}
+
+.venture-card:hover::before,
+.venture-card:hover::after {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+}

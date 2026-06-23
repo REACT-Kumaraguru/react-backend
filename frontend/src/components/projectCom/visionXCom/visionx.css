@@ -1,0 +1,94 @@
+/* =========================================================================
+   Scoped styles for the Vision X portal page.
+   Ported from the source project's global styles.css — only the `vx-*`
+   layer is kept, scoped under `.vx-page` so nothing leaks into the rest of
+   the react-backend site. The source's shadcn `@theme`/`:root`/`.dark`
+   token blocks and the global `@layer base { * / body }` overrides are
+   intentionally NOT ported (the page uses standard Tailwind utilities and
+   explicit border/bg colors throughout, so it needs none of them).
+   ========================================================================= */
+
+.vx-page {
+  --vx-bg: #02040a;
+  --vx-bg-2: #060a18;
+  --vx-cyan: #00CFFF;
+  --vx-purple: #8a5cff;
+  --vx-cyan-soft: rgba(0, 207, 255, 0.55);
+
+  background: #07111F;
+  background-attachment: fixed;
+}
+
+.vx-page .vx-grid {
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.vx-page .vx-vignette {
+  background: radial-gradient(ellipse at center, transparent 40%, #07111F 90%);
+}
+
+.vx-page .vx-streak {
+  position: absolute;
+  top: -20%;
+  width: 1px;
+  height: 140%;
+  background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.7), transparent);
+  animation: vx-streak-fall linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes vx-streak-fall {
+  0% { transform: translateY(-30%); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(40%); opacity: 0; }
+}
+
+.vx-page .vx-glass {
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid rgba(0, 207, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 0 0 1px rgba(0,207,255,0.05), 0 30px 80px -30px rgba(0,207,255,0.25);
+}
+
+.vx-page .vx-neon-text {
+  background: linear-gradient(180deg, #ffffff 0%, #9fe9ff 60%, #00CFFF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(0, 207, 255, 0.35);
+}
+
+.vx-page .vx-glow {
+  box-shadow: 0 0 30px rgba(0, 207, 255, 0.45), inset 0 0 20px rgba(0, 207, 255, 0.15);
+}
+
+@keyframes vx-float {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-14px) }
+}
+@keyframes vx-spin-slow {
+  to { transform: rotate(360deg) }
+}
+@keyframes vx-pulse-ring {
+  0% { transform: scale(0.9); opacity: .8 }
+  100% { transform: scale(1.6); opacity: 0 }
+}
+@keyframes vx-scan {
+  0% { transform: translateY(-100%) }
+  100% { transform: translateY(100%) }
+}
+@keyframes vx-stream {
+  0% { transform: translateY(-100%) }
+  100% { transform: translateY(100vh) }
+}
+
+.vx-page .vx-float { animation: vx-float 6s ease-in-out infinite; }
+.vx-page .vx-spin-slow { animation: vx-spin-slow 30s linear infinite; }
+
+.vx-page .vx-scrollbar-hide::-webkit-scrollbar { display: none }
+.vx-page .vx-scrollbar-hide { scrollbar-width: none }

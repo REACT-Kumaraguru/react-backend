@@ -1,0 +1,52 @@
+name: react-web
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: react-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reactwork}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reactwork}
+      POSTGRES_DB: ${POSTGRES_DB:-reactworkplace}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/docker/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./backend/docker/02-migrate.sql:/docker-entrypoint-initdb.d/02-migrate.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    container_name: react-api
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-reactwork}:${POSTGRES_PASSWORD:-reactwork}@db:5432/${POSTGRES_DB:-reactworkplace}
+      TRUST_PROXY: "1"
+      SESSION_COOKIE_SECURE: "true"
+      CORS_ORIGIN: https://react.kct.ac.in
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+
+  web:
+    build: ./frontend
+    container_name: react-frontend
+    depends_on:
+      - api
+
+networks:
+  default:
+    external: true
+    name: idea-lab_default
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,119 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   PROJECTS PAGE — CSS Scroll-Driven Animation (Progressive Enhancement)
+   Applied on top of the Framer Motion fallback. Only activates in browsers
+   that support animation-timeline: view() (Chrome 115+, Edge 115+).
+───────────────────────────────────────────────────────────────────────── */
+
+/* Shared keyframe used by both CSS and injected fallback */
+@keyframes pc-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(72px) scale(0.84);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes pc-title-in {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pc-deck-fan {
+  from { opacity: 0; transform: translateY(30px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── CSS Scroll-Driven overrides (Chrome 115+) ───────────────────────── */
+@supports (animation-timeline: view()) {
+  /* Section title */
+  .pc-title-anim {
+    animation: pc-title-in cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  /* Deck preview cards */
+  .pc-deck-anim {
+    animation: pc-deck-fan cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+
+  /* Project grid cards — each gets a slightly staggered range */
+  .pc-card-anim {
+    animation: pc-rise-in cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-timeline: view();
+  }
+
+  .pc-card-anim:nth-child(1) { animation-range: entry 0%  cover 42%; }
+  .pc-card-anim:nth-child(2) { animation-range: entry 4%  cover 46%; }
+  .pc-card-anim:nth-child(3) { animation-range: entry 2%  cover 44%; }
+  .pc-card-anim:nth-child(4) { animation-range: entry 6%  cover 48%; }
+  .pc-card-anim:nth-child(5) { animation-range: entry 4%  cover 46%; }
+  .pc-card-anim:nth-child(6) { animation-range: entry 8%  cover 50%; }
+}
+
+/* ── Hover glow pulse ────────────────────────────────────────────────── */
+@keyframes pc-glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.08); }
+}
+
+.pc-glow-layer {
+  animation: pc-glow-pulse 3s ease-in-out infinite;
+}
+
+/* ── Floating accent orbs in hero ───────────────────────────────────── */
+@keyframes pc-orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(18px, -24px) scale(1.06); }
+  66%       { transform: translate(-14px, 16px) scale(0.95); }
+}
+
+.pc-orb-1 { animation: pc-orb-float 14s ease-in-out infinite; }
+.pc-orb-2 { animation: pc-orb-float 18s ease-in-out infinite reverse; }
+.pc-orb-3 { animation: pc-orb-float 22s ease-in-out infinite 4s; }
+
+/* ── Card thumbnail shimmer ─────────────────────────────────────────── */
+@keyframes pc-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.pc-thumb-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: pc-shimmer 3s linear infinite;
+}
+
+/* ── Deck stack card animations ─────────────────────────────────────── */
+@keyframes pc-stack-hover {
+  0%, 100% { transform: var(--stack-base-transform) translateY(0); }
+  50%       { transform: var(--stack-base-transform) translateY(-6px); }
+}
+
+/* ── Stats counter fade ─────────────────────────────────────────────── */
+@keyframes pc-stat-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@supports (animation-timeline: view()) {
+  .pc-stat-anim {
+    animation: pc-stat-in cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-timeline: view();
+  }
+  .pc-stat-anim:nth-child(1) { animation-range: entry 5%  cover 35%; }
+  .pc-stat-anim:nth-child(2) { animation-range: entry 10% cover 40%; }
+  .pc-stat-anim:nth-child(3) { animation-range: entry 15% cover 45%; }
+}

@@ -1,0 +1,79 @@
+.section-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #72523f;
+  background: rgba(255, 250, 240, 0.72);
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.glass-panel {
+  border: 1px solid var(--line);
+  background: var(--glass);
+  box-shadow: 0 24px 80px rgba(80, 61, 39, 0.09);
+  backdrop-filter: blur(20px);
+}
+
+.soft-card {
+  border: 1px solid rgba(72, 62, 48, 0.11);
+  background:
+    linear-gradient(145deg, rgba(255, 252, 244, 0.94), rgba(245, 235, 216, 0.64)),
+    rgba(255, 250, 240, 0.86);
+  box-shadow: 0 20px 60px rgba(79, 65, 43, 0.08);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.gradient-text {
+  color: transparent;
+  background: linear-gradient(105deg, #25231f 10%, #bd6b4c 48%, #718064 84%);
+  background-clip: text;
+}
+
+.thermal-blob {
+  position: absolute;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 999px;
+  filter: blur(44px);
+  opacity: 0.28;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(189, 107, 76, 0.55), transparent 68%);
+}
+
+.olive-blob {
+  background: radial-gradient(circle, rgba(120, 134, 107, 0.48), transparent 68%);
+}
+
+.horizontal-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+}
+
+.diagram-line {
+  background: linear-gradient(90deg, transparent, rgba(189, 107, 76, 0.72), transparent);
+}
+
+.chart-bar {
+  transform-origin: bottom;
+}
+
+@media (max-width: 768px) {
+  .section-shell {
+    width: min(100% - 24px, 1180px);
+  }
+}
