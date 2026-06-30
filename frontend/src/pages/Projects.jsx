@@ -398,8 +398,6 @@ function BentoCard({ project, span, index }) {
             {website !== '#' ? (
               <a
                 href={website}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group inline-flex w-fit items-center gap-2 rounded-xl px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:opacity-95"
                 style={{ background: accent }}
                 onClick={(e) => e.stopPropagation()}
@@ -615,8 +613,6 @@ function MobileCard({ project, index }) {
         {website !== '#' ? (
           <a
             href={website}
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
             style={{ background: accent }}
           >
@@ -720,7 +716,7 @@ function CtaSection() {
         </p>
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <a
-            href="/programme"
+            href="/programmes"
             className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-gray-800"
           >
             Explore Programmes <ArrowUpRight size={14} />
