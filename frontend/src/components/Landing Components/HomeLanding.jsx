@@ -936,7 +936,7 @@ function OutputsSection() {
         </motion.div>
 
         <Link
-          to="/programme"
+          to="/programmes"
           className="inline-flex items-center gap-2 mt-6 text-sm font-bold text-gray-900 hover:text-amber-600 transition-colors group"
         >
           See how the programme works
