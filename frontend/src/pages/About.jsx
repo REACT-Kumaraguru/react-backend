@@ -82,7 +82,7 @@ const SectionLabel = ({ children, tone = 'light' }) => (
 const CtaRow = ({ dark = false }) => (
   <div className="mt-9 flex flex-col gap-3 sm:flex-row">
     <Link
-      to="/programmes"
+      to="/programme"
       className={`group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.025] ${
         dark
           ? 'bg-white text-[#0F2A44] hover:bg-white/90'
@@ -261,9 +261,9 @@ const FrameworkCard = ({ framework, index }) => {
 
 /* Each card flies in from a unique direction */
 const CARD_FROM = [
-  { x: -220, y: 40,  rotation: -14, scale: 0.78 }, // ← slides from left + slightly below, tilts upright
-  { x: 0,    y: -70, rotation:  -5, scale: 0.52 }, // ↓ drops from above + zooms up — distinct from the two slides
-  { x: 220,  y: 40,  rotation:  14, scale: 0.78 }, // → slides from right + slightly below, tilts upright
+  { x: -220, y: 0,   rotation: -15, scale: 0.80 }, // ← from left, tilted
+  { x: 0,   y: 200,  rotation:   0, scale: 0.65 }, // ↑ from below, squished
+  { x: 220, y: 0,   rotation:  15, scale: 0.80 }, // → from right, tilted
 ];
 
 /* ── Who Belongs Here — fly-in / fly-out on every scroll pass ── */
@@ -278,20 +278,19 @@ const QualityCard = ({ quality, index, sectionRef }) => {
     const card = cardRef.current;
     if (prefersReduced || !card) return;
 
-    const delay = index * 0.15;
+    const delay = index * 0.07;
     const from  = CARD_FROM[index];
 
     /*
-      Trigger off the individual card so the animation starts exactly
-      when each card enters the viewport — not off the section top which
-      is ~300px above the cards (causing the animation to finish before
-      cards are even visible).
+      Trigger off the section heading (sectionRef) so all 3 cards start
+      animating the moment the section scrolls into view — not when each
+      individual card reaches the viewport.
     */
-    const triggerEl = card;
+    const triggerEl = sectionRef?.current ?? card;
     const st = {
       trigger: triggerEl,
-      start: 'top 92%',
-      end: 'bottom 8%',
+      start: 'top 78%',
+      end: 'top 5%',
       toggleActions: 'play reverse play reverse',
     };
 

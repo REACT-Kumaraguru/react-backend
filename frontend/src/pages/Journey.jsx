@@ -959,11 +959,11 @@ function PhaseBlock({ phase, index, total, pinnedOffset = 80 }) {
 /* ─────────────────────────────────────────────
    PHASE CARD INNER — layout only, no pinning
 ───────────────────────────────────────────── */
-function PhaseCardInner({ phase, style = {} }) {
+function PhaseCardInner({ phase }) {
   return (
     <div
       className="bg-white rounded-2xl p-5 md:p-7 border border-black/5"
-      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.05)', ...style }}
+      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Left — phase identity + description */}
@@ -1118,21 +1118,14 @@ function FivePhasesSection({ phases }) {
             const scrollFrac = Math.min(frac / SCROLL_PORTION, 1);
 
             if (activeIdxRef.current !== idx) {
-              const movingForward = idx > activeIdxRef.current;
               activeIdxRef.current = idx;
               setActiveIndex(idx);
-              if (movingForward) {
-                const newCardEl = cardRefs.current[idx];
-                if (newCardEl) newCardEl.scrollTop = 0;
-                return;
-              }
             }
 
             const cardEl = cardRefs.current[idx];
             if (cardEl) {
               const maxScroll = cardEl.scrollHeight - cardEl.clientHeight;
               if (maxScroll > 0) cardEl.scrollTop = scrollFrac * maxScroll;
-              else cardEl.scrollTop = 0;
             }
           },
         });
@@ -1162,16 +1155,11 @@ function FivePhasesSection({ phases }) {
         }}
       >
         <div className="max-w-7xl w-full mx-auto flex flex-col flex-1 min-h-0">
-          <div style={{ flexShrink: 0, paddingTop: '24px', paddingBottom: '12px' }}>
-            <p
-              className="text-xs uppercase font-semibold mb-2 tracking-widest"
-              style={{ fontFamily: 'Arial, sans-serif', letterSpacing: '0.15em', color: '#E05C3A' }}
-            >
-              The Five Phases in Full
-            </p>
-            <h2 className="text-2xl font-bold text-[#1a2c4e] leading-tight">
-              Every phase. Every course. Every gate.
-            </h2>
+          <div style={{ flexShrink: 0, paddingTop: '48px', paddingBottom: '20px' }}>
+            <SectionHeading
+              eyebrow="The Five Phases in Full"
+              title="Every phase. Every course. Every gate."
+            />
           </div>
 
           <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
@@ -1204,10 +1192,7 @@ function FivePhasesSection({ phases }) {
                     scrollbarColor: 'rgba(26,44,78,0.18) transparent',
                   }}
                 >
-                  <PhaseCardInner
-                    phase={phase}
-                    style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
-                  />
+                  <PhaseCardInner phase={phase} />
                 </div>
               </motion.div>
             ))}
@@ -2034,7 +2019,7 @@ export function Journey() {
             <CTAButton to="/apply" variant="primary">
               Apply Now
             </CTAButton>
-            <CTAButton to="/programmes" variant="secondary">
+            <CTAButton to="/programme" variant="secondary">
               See the Programmes
             </CTAButton>
           </motion.div>
@@ -2308,7 +2293,7 @@ export function Journey() {
                 style={{ willChange: 'transform' }}
               >
                 <Link
-                  to="/programmes"
+                  to="/programme"
                   id="cta-programme-bottom"
                   className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white font-semibold text-sm transition-all duration-300 hover:bg-white/10"
                 >
